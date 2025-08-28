@@ -13,6 +13,7 @@ from app_sections.epidemiologica import show_epidemiological_analysis
 from app_sections.attack_rate import show_attack_rate_analysis
 from app_sections.explore import show_free_exploration
 from app_sections.reports import show_reports
+from app_sections.technical import show_technical_exposition
 
 from dashboard_completo_v2 import load_all_data
 
@@ -37,6 +38,7 @@ def main() -> None:
             "⚡ Taxa de Ataque",
             "🔍 Exploração Livre",
             "📋 Relatórios",
+            "⚙️ Expositivo Técnico",
         ],
     )
 
@@ -62,6 +64,8 @@ def main() -> None:
         show_free_exploration(dados)
     elif opcao == "📋 Relatórios":
         show_reports(dados)
+    elif opcao == "⚙️ Expositivo Técnico":
+        show_technical_exposition(dados)
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("**📅 Última atualização:**")

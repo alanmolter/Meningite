@@ -15,8 +15,14 @@ import os
 from datetime import datetime
 import warnings
 from scipy import stats
-from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.tsa.seasonal import seasonal_decompose
+# Imports condicionais para evitar problemas de compatibilidade
+try:
+    from statsmodels.tsa.arima.model import ARIMA
+    from statsmodels.tsa.seasonal import seasonal_decompose
+    STATSMODELS_AVAILABLE = True
+except ImportError as e:
+    print(f"Aviso: statsmodels não disponível: {e}")
+    STATSMODELS_AVAILABLE = False
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import seaborn as sns
@@ -376,6 +382,17 @@ def show_cases_analysis(dados):
         fig_evolucao.update_xaxes(tickformat='d')
         st.plotly_chart(fig_evolucao, use_container_width=True)
         
+        # Explicação do gráfico de evolução temporal
+        st.markdown("""
+        #### 📖 **Interpretação do Gráfico de Evolução Temporal:**
+        - **Eixo X (Horizontal):** Anos (2017-2024)
+        - **Eixo Y (Vertical):** Número total de casos notificados por ano
+        - **Linha com marcadores:** Cada ponto representa o total de casos em um ano específico
+        - **Tendência:** A inclinação da linha mostra se os casos estão aumentando, diminuindo ou estáveis
+        - **Variações:** Picos ou vales podem indicar surtos, mudanças em políticas de saúde ou fatores sazonais
+        - **Utilidade:** Permite identificar padrões temporais e avaliar a eficácia de intervenções de saúde pública
+        """)
+        
         # Análise de sazonalidade
         st.subheader("🌡️ **Análise de Sazonalidade**")
         
@@ -405,6 +422,16 @@ def show_cases_analysis(dados):
             )
             
             st.plotly_chart(fig_sazonalidade, use_container_width=True)
+            
+            # Explicação do gráfico de sazonalidade
+            st.markdown("""
+            #### 📖 **Interpretação do Gráfico de Sazonalidade:**
+            - **Eixo X (Horizontal):** Meses do ano (Jan a Dez)
+            - **Eixo Y (Vertical):** Número total de casos acumulados em cada mês (todos os anos)
+            - **Barras coloridas:** Altura representa o total de casos, cores mais intensas = mais casos
+            - **Padrões sazonais:** Permite identificar meses com maior/menor incidência
+            - **Importância epidemiológica:** Ajuda a planejar campanhas preventivas e alocação de recursos
+            """)
             
             # Interpretação da sazonalidade
             st.markdown("""
@@ -465,6 +492,42 @@ def show_cases_analysis(dados):
                     st.metric("🎯 Significância", "Significativo (p<0.05)")
                 else:
                     st.metric("🎯 Significância", "Não significativo (p≥0.05)")
+            
+            # Explicação detalhada das métricas estatísticas
+            st.markdown("---")
+            st.markdown("### 📚 **Explicação das Métricas Estatísticas**")
+            
+            st.markdown(f"""
+            #### 📊 **Coeficiente Angular ({slope:.1f})**
+            - **O que é:** Representa a variação média anual no número de casos
+            - **Interpretação:** 
+              - Se positivo: aumenta {abs(slope):.1f} casos por ano em média
+              - Se negativo: diminui {abs(slope):.1f} casos por ano em média
+              - Se próximo de zero: tendência estável
+            
+            #### 📈 **Coeficiente de Determinação (R² = {r_value**2:.3f})**
+            - **O que é:** Mede o quanto da variação nos casos é explicada pela tendência temporal
+            - **Escala:** 0 a 1 (quanto mais próximo de 1, melhor o ajuste)
+            - **Interpretação atual:** 
+              - R² = {r_value**2:.3f} significa que {r_value**2*100:.1f}% da variação nos casos é explicada pelo tempo
+              - {100-r_value**2*100:.1f}% da variação se deve a outros fatores (sazonalidade, surtos, políticas de saúde, etc.)
+            - **Qualidade do ajuste:**
+              - R² > 0.7: Ajuste forte
+              - R² 0.4-0.7: Ajuste moderado  
+              - R² < 0.4: Ajuste fraco
+              - **Seu resultado:** {"Ajuste forte" if r_value**2 > 0.7 else "Ajuste moderado" if r_value**2 > 0.4 else "Ajuste fraco"}
+            
+            #### 🎯 **Significância Estatística (p-valor = {p_value:.4f})**
+            - **O que é:** Probabilidade de observar essa tendência por acaso
+            - **Interpretação:**
+              - p < 0.05: Tendência estatisticamente significativa (confiável)
+              - p ≥ 0.05: Tendência pode ser devida ao acaso
+              - **Seu resultado:** {"A tendência é estatisticamente significativa e confiável" if p_value < 0.05 else "A tendência pode ser devida ao acaso - não é estatisticamente significativa"}
+            
+            #### 📏 **Erro Padrão ({std_err:.2f})**
+            - **O que é:** Mede a incerteza na estimativa do coeficiente angular
+            - **Interpretação:** Quanto menor, mais precisa é a estimativa da tendência
+            """)
             
             # Interpretação da tendência
             if slope > 0:
@@ -563,6 +626,20 @@ def show_sorogrupos_analysis(dados):
         
         st.plotly_chart(fig_letalidade, use_container_width=True)
         
+        # Explicação do gráfico de letalidade por sorogrupo
+        st.markdown("""
+        #### 📖 **Interpretação do Gráfico de Letalidade por Sorogrupo:**
+        - **Eixo X (Horizontal):** Diferentes sorogrupos de meningite (A, B, C, W, Y, etc.)
+        - **Eixo Y (Vertical):** Taxa de letalidade em percentual (óbitos/casos × 100)
+        - **Barras coloridas:** Altura representa a letalidade, cores mais intensas = maior letalidade
+        - **Importância clínica:** Identifica quais sorogrupos são mais letais e necessitam atenção especial
+        - **Aplicação:** Orienta estratégias de tratamento e priorização de vacinação
+        """)
+        
+        # Mostrar tabela com dados detalhados
+        st.markdown("#### 📋 **Dados Detalhados por Sorogrupo:**")
+        st.dataframe(letalidade_por_sorogrupo.sort_values('Letalidade', ascending=False))
+        
         # Análise de relações não lineares
         st.subheader("🔗 **Análise de Relações Não Lineares**")
         
@@ -614,6 +691,21 @@ def show_sorogrupos_analysis(dados):
         
         st.plotly_chart(fig_dispersao, use_container_width=True)
         
+        # Explicação do gráfico de dispersão com regressão polinomial
+        st.markdown("""
+        #### 📖 **Interpretação do Gráfico de Dispersão com Regressão Polinomial:**
+        - **Eixo X (Horizontal):** Número total de casos por sorogrupo
+        - **Eixo Y (Vertical):** Taxa de letalidade (%) por sorogrupo
+        - **Pontos:** Cada ponto representa um sorogrupo específico
+        - **Tamanho dos pontos:** Proporcional ao número de casos (pontos maiores = mais casos)
+        - **Linha tracejada vermelha:** Tendência polinomial de grau 2 (curva que melhor se ajusta aos dados)
+        - **Análise não-linear:** Permite identificar relações complexas que não seguem uma linha reta
+        - **Interpretação epidemiológica:** 
+          - Se a curva é crescente: sorogrupos com mais casos tendem a ter maior letalidade
+          - Se a curva é decrescente: sorogrupos com mais casos tendem a ter menor letalidade
+          - Curva em U ou invertida: relação complexa que requer investigação detalhada
+        """)
+        
         # Análise de correlação
         st.subheader("📊 **Análise de Correlação**")
         
@@ -630,29 +722,54 @@ def show_sorogrupos_analysis(dados):
                 st.metric("📈 Correlação de Pearson", f"{corr_pearson:.3f}")
                 st.write(f"P-valor: {p_pearson:.4f}")
                 st.write("**Interpretação:** Mede correlação linear")
+                if abs(corr_pearson) > 0.7:
+                    st.write("**Força:** Correlação forte")
+                elif abs(corr_pearson) > 0.3:
+                    st.write("**Força:** Correlação moderada")
+                else:
+                    st.write("**Força:** Correlação fraca")
             
             with col2:
                 st.metric("📊 Correlação de Spearman", f"{corr_spearman:.3f}")
                 st.write(f"P-valor: {p_spearman:.4f}")
                 st.write("**Interpretação:** Mede correlação monotônica")
+                if abs(corr_spearman) > 0.7:
+                    st.write("**Força:** Correlação forte")
+                elif abs(corr_spearman) > 0.3:
+                    st.write("**Força:** Correlação moderada")
+                else:
+                    st.write("**Força:** Correlação fraca")
             
             # Interpretação das correlações
-            st.markdown("""
-            **🔍 Interpretação das Correlações:**
+            st.markdown(f"""
+            ### 📚 **Explicação Detalhada das Correlações:**
             
-            **Correlação de Pearson:**
-            - **+1.0:** Correlação linear positiva perfeita
-            - **0.0:** Sem correlação linear
-            - **-1.0:** Correlação linear negativa perfeita
+            #### 📈 **Correlação de Pearson = {corr_pearson:.3f}**
+            - **O que mede:** Força da relação linear entre número de casos e letalidade
+            - **Escala:** -1 a +1
+            - **Interpretação atual:**
+              - Valor = {corr_pearson:.3f}
+              - {"Correlação positiva" if corr_pearson > 0 else "Correlação negativa" if corr_pearson < 0 else "Sem correlação"}
+              - P-valor = {p_pearson:.4f} → {"Estatisticamente significativa" if p_pearson < 0.05 else "Não significativa"}
+            - **Limitações:** Assume relação linear, sensível a outliers
             
-            **Correlação de Spearman:**
-            - **+1.0:** Relação monotônica crescente perfeita
-            - **0.0:** Sem relação monotônica
-            - **-1.0:** Relação monotônica decrescente perfeita
+            #### 📊 **Correlação de Spearman = {corr_spearman:.3f}**
+            - **O que mede:** Força da relação monotônica (crescente ou decrescente)
+            - **Escala:** -1 a +1
+            - **Interpretação atual:**
+              - Valor = {corr_spearman:.3f}
+              - {"Relação monotônica positiva" if corr_spearman > 0 else "Relação monotônica negativa" if corr_spearman < 0 else "Sem relação monotônica"}
+              - P-valor = {p_spearman:.4f} → {"Estatisticamente significativa" if p_spearman < 0.05 else "Não significativa"}
+            - **Vantagens:** Detecta relações não-lineares, robusto a outliers
             
-            **Diferenças importantes:**
-            - **Pearson:** Sensível a outliers, assume linearidade
-            - **Spearman:** Robusto a outliers, detecta relações não lineares
+            #### 🔍 **Comparação dos Resultados:**
+            - **Diferença:** {abs(corr_pearson - corr_spearman):.3f}
+            - **Interpretação:** {"Relação aproximadamente linear" if abs(corr_pearson - corr_spearman) < 0.1 else "Possível relação não-linear"}
+            
+            #### 📋 **Escalas de Interpretação:**
+            - **0.0 - 0.3:** Correlação fraca
+            - **0.3 - 0.7:** Correlação moderada
+            - **0.7 - 1.0:** Correlação forte
             """)
         
         # Evolução temporal da letalidade
@@ -728,6 +845,22 @@ def show_sorogrupos_analysis(dados):
                     )
                     
                     st.plotly_chart(fig_cluster, use_container_width=True)
+                    
+                    # Explicação do gráfico de clustering K-Means
+                    st.markdown(f"""
+                    #### 📖 **Interpretação do Gráfico de Clustering K-Means:**
+                    - **Eixo X (Horizontal):** Número de casos por sorogrupo
+                    - **Eixo Y (Vertical):** Taxa de letalidade (%) por sorogrupo
+                    - **Cores diferentes:** Cada cor representa um cluster diferente
+                    - **Tamanho dos pontos:** Proporcional ao número de casos
+                    - **Algoritmo:** K-Means agrupa sorogrupos similares em casos e letalidade
+                    
+                    #### 🎯 **Como interpretar os clusters:**
+                    - **Cluster 0:** Sorogrupos com características similares de casos/letalidade
+                    - **Proximidade:** Sorogrupos no mesmo cluster têm comportamento epidemiológico similar
+                    - **Separação:** Clusters distintos indicam perfis epidemiológicos diferentes
+                    - **Aplicação prática:** Permite estratégias de controle diferenciadas por cluster
+                    """)
                     
                     # Resumo dos clusters
                     st.subheader("📊 **Resumo dos Clusters**")
@@ -1017,6 +1150,17 @@ def show_etiologia_analysis(dados):
                         
                         fig_pca.update_layout(template='plotly_white')
                         st.plotly_chart(fig_pca, use_container_width=True)
+                        
+                        # Explicação do gráfico de PCA 2D
+                        st.markdown("""
+                        #### 📖 **Interpretação do Gráfico de PCA (2 Componentes):**
+                        - **Eixo X (Horizontal):** Componente Principal 1 (direção de maior variação)
+                        - **Eixo Y (Vertical):** Componente Principal 2 (segunda maior direção de variação)
+                        - **Pontos:** Cada ponto representa uma etiologia no espaço reduzido
+                        - **Distância entre pontos:** Etiologias próximas têm comportamentos similares
+                        - **Posição nos quadrantes:** Diferentes combinações de casos e letalidade
+                        - **Redução dimensional:** Simplifica análise de múltiplas variáveis em 2D
+                        """)
                     else:
                         # Se só temos 1 componente, mostrar como gráfico de barras
                         fig_pca = px.bar(
@@ -1027,6 +1171,16 @@ def show_etiologia_analysis(dados):
                         )
                         fig_pca.update_layout(template='plotly_white')
                         st.plotly_chart(fig_pca, use_container_width=True)
+                        
+                        # Explicação do gráfico de PCA 1D
+                        st.markdown("""
+                        #### 📖 **Interpretação do Gráfico de PCA (1 Componente):**
+                        - **Eixo X (Horizontal):** Diferentes etiologias
+                        - **Eixo Y (Vertical):** Valor do Componente Principal 1
+                        - **Altura das barras:** Representa a projeção de cada etiologia no componente principal
+                        - **Valores positivos/negativos:** Indicam diferentes padrões de casos e letalidade
+                        - **Utilidade:** Ordena etiologias por sua similaridade em um eixo principal
+                        """)
                     
                     # Informações sobre PCA
                     col1, col2 = st.columns(2)
@@ -1042,21 +1196,56 @@ def show_etiologia_analysis(dados):
                         if componentes.shape[1] > 1:
                             st.write("**Componente 2:** Combinação ortogonal ao Componente 1")
                     
-                    # Interpretação dos componentes
-                    st.markdown("""
-                    **🔍 Interpretação dos Componentes:**
+                    # Interpretação detalhada dos componentes
+                    st.markdown(f"""
+                    ### 📚 **Explicação Detalhada do PCA:**
                     
-                    **Componente 1:** Representa a direção de maior variabilidade nos dados
-                    - **Valores positivos:** Etiologias com muitos casos e alta letalidade
-                    - **Valores negativos:** Etiologias com poucos casos e baixa letalidade
+                    #### 🎯 **O que é PCA:**
+                    - **Análise de Componentes Principais:** Técnica de redução dimensional
+                    - **Objetivo:** Encontrar direções de máxima variância nos dados
+                    - **Utilidade:** Simplifica dados complexos mantendo a informação principal
+                    
+                    #### 📊 **Variância Explicada Total:** {sum(pca.explained_variance_ratio_)*100:.1f}%
+                    - **Componente 1:** {pca.explained_variance_ratio_[0]*100:.1f}% da variância
+                      - Captura a principal diferença entre etiologias
+                      - Combina casos e letalidade de forma otimizada
                     """)
                     
                     if componentes.shape[1] > 1:
-                        st.markdown("""
-                        **Componente 2:** Representa a variabilidade restante (ortogonal ao C1)
-                        - **Valores positivos:** Etiologias com padrão específico
-                        - **Valores negativos:** Etiologias com padrão oposto
+                        st.markdown(f"""
+                    - **Componente 2:** {pca.explained_variance_ratio_[1]*100:.1f}% da variância
+                      - Captura variação restante não explicada pelo C1
+                      - Perpendicular ao Componente 1 (ortogonal)
+                      - Revela padrões secundários nos dados
+                    
+                    #### 🎯 **Interpretação Epidemiológica:**
+                    - **Quadrante superior direito:** Etiologias graves (muitos casos + alta letalidade)
+                    - **Quadrante inferior esquerdo:** Etiologias menos problemáticas
+                    - **Outros quadrantes:** Padrões específicos que merecem investigação
                         """)
+                    else:
+                        st.markdown("""
+                    #### 🎯 **Interpretação do Componente Único:**
+                    - **Valores altos:** Etiologias com maior impacto epidemiológico
+                    - **Valores baixos:** Etiologias com menor impacto
+                    - **Ordenação:** Permite priorização de recursos de saúde
+                        """)
+                    
+                    # Mostrar cargas dos componentes (loadings)
+                    st.markdown("#### 🔢 **Cargas dos Componentes (Loadings):**")
+                    loadings_df = pd.DataFrame(
+                        pca.components_.T,
+                        columns=[f'Componente {i+1}' for i in range(pca.components_.shape[0])],
+                        index=['Casos', 'Letalidade']
+                    )
+                    st.dataframe(loadings_df.round(3))
+                    
+                    st.markdown("""
+                    **📋 Como interpretar as cargas:**
+                    - **Valores positivos:** Variável contribui positivamente para o componente
+                    - **Valores negativos:** Variável contribui negativamente para o componente
+                    - **Magnitude:** Quanto maior o valor absoluto, maior a importância da variável
+                    """)
                     
                     # Mostrar dados tratados
                     st.write("**Dados utilizados no PCA (NaN substituídos por 0):**")
@@ -1103,6 +1292,17 @@ def show_etiologia_analysis(dados):
                     fig_heatmap.update_layout(template='plotly_white')
                     st.plotly_chart(fig_heatmap, use_container_width=True)
                     
+                    # Explicação do heatmap de correlação
+                    st.markdown("""
+                    #### 📖 **Interpretação do Heatmap de Correlação:**
+                    - **Cores:** Intensidade da correlação entre etiologias ao longo do tempo
+                    - **Azul escuro:** Correlação positiva forte (etiologias variam juntas)
+                    - **Vermelho escuro:** Correlação negativa forte (etiologias variam inversamente)
+                    - **Branco/Neutro:** Sem correlação (etiologias independentes)
+                    - **Diagonal:** Sempre 1.0 (correlação de cada etiologia consigo mesma)
+                    - **Utilidade:** Identifica etiologias com padrões temporais similares ou opostos
+                    """)
+                    
                     # Tabela de correlações
                     st.write("**Valores de Correlação:**")
                     st.dataframe(matriz_corr.round(3))
@@ -1117,70 +1317,7 @@ def show_etiologia_analysis(dados):
         else:
             st.warning("⚠️ Colunas 'Ano' e/ou 'Casos' não encontradas para análise de correlação")
         
-        # Análise temporal por etiologia
-        st.subheader("📈 **Análise Temporal por Etiologia**")
-        
-        if 'Ano' in etiologia.columns and 'Casos' in etiologia.columns:
-            try:
-                # Preparar dados temporais - tratar valores NaN
-                etiologia_analise = etiologia.copy()
-                etiologia_analise['Casos'] = etiologia_analise['Casos'].fillna(0)
-                
-                dados_temporais = etiologia_analise.groupby(['Ano', 'Etiologia'])['Casos'].sum().reset_index()
-                
-                # Filtrar apenas etiologias com pelo menos um caso
-                etiologias_com_casos = dados_temporais.groupby('Etiologia')['Casos'].sum()
-                etiologias_com_casos = etiologias_com_casos[etiologias_com_casos > 0].index
-                dados_temporais = dados_temporais[dados_temporais['Etiologia'].isin(etiologias_com_casos)]
-                
-                if len(dados_temporais) > 0:
-                    # Gráfico de linha
-                    fig_temporal = px.line(
-                        dados_temporais,
-                        x='Ano',
-                        y='Casos',
-                        color='Etiologia',
-                        title="Evolução Temporal dos Casos por Etiologia",
-                        markers=True
-                    )
-                    
-                    fig_temporal.update_layout(
-                        xaxis_title="Ano",
-                        yaxis_title="Número de Casos",
-                        template='plotly_white'
-                    )
-                    
-                    fig_temporal.update_xaxes(tickformat='d')
-                    st.plotly_chart(fig_temporal, use_container_width=True)
-                    
-                    # Estatísticas temporais
-                    st.write(f"**Período analisado:** {dados_temporais['Ano'].min()} - {dados_temporais['Ano'].max()}")
-                    st.write(f"**Etiologias com dados temporais:** {len(etiologias_com_casos)}")
-                else:
-                    st.warning("⚠️ Nenhum dado temporal válido encontrado")
-            except Exception as e:
-                st.warning(f"Erro na análise temporal: {e}")
-        else:
-            st.warning("⚠️ Colunas 'Ano' e/ou 'Casos' não encontradas para análise temporal")
 
-        # Complemento temporal usando sorogrupos (quando disponível) para ampliar período
-        if 'sorogrupos_consolidadas' in dados or 'sorogrupos_consolidados' in dados:
-            sorogrupos_df = dados.get('sorogrupos_consolidados') if isinstance(dados.get('sorogrupos_consolidados'), pd.DataFrame) else dados.get('sorogrupos_consolidadas')
-            if isinstance(sorogrupos_df, pd.DataFrame) and {'Ano', 'Sorogrupo'}.issubset(sorogrupos_df.columns):
-                if 'Casos' in sorogrupos_df.columns:
-                    st.subheader("🧪 Evolução Temporal por Sorogrupo (complementar)")
-                    sg_tmp = sorogrupos_df.copy()
-                    sg_tmp['Casos'] = pd.to_numeric(sg_tmp['Casos'], errors='coerce').fillna(0)
-                    serie_sg = sg_tmp.groupby(['Ano', 'Sorogrupo'])['Casos'].sum().reset_index()
-                    if len(serie_sg) > 0:
-                        fig_sg = px.line(
-                            serie_sg, x='Ano', y='Casos', color='Sorogrupo',
-                            title='Evolução Temporal dos Casos por Sorogrupo', markers=True
-                        )
-                        fig_sg.update_layout(template='plotly_white', xaxis_title='Ano', yaxis_title='Casos')
-                        fig_sg.update_xaxes(tickformat='d')
-                        st.plotly_chart(fig_sg, use_container_width=True)
-        
         # Análise de sazonalidade
         st.subheader("🌡️ **Análise de Sazonalidade**")
         
@@ -1397,6 +1534,19 @@ def show_imunizacao_analysis(dados):
             fig_cobertura.update_xaxes(tickformat='%Y')
             st.plotly_chart(fig_cobertura, use_container_width=True)
             
+            # Explicação do gráfico de evolução da cobertura vacinal
+            st.markdown("""
+            #### 📖 **Interpretação do Gráfico de Evolução da Cobertura Vacinal:**
+            - **Eixo X (Horizontal):** Anos do período analisado
+            - **Eixo Y (Vertical):** Cobertura vacinal (%) ou número total de doses aplicadas
+            - **Linha com marcadores:** Evolução temporal da vacinação contra meningite
+            - **Tendência crescente:** Melhoria na cobertura vacinal ao longo do tempo
+            - **Tendência decrescente:** Possível redução na adesão ou mudanças nas políticas
+            - **Variações abruptas:** Podem indicar mudanças em campanhas, disponibilidade de vacinas ou eventos específicos
+            - **Importância epidemiológica:** Cobertura alta (>95%) é essencial para imunidade coletiva
+            - **Meta de saúde pública:** Monitoramento da eficácia das campanhas de vacinação
+            """)
+            
             # Análise de correlação com casos de meningite
             if 'casos_consolidados' in dados and dados['casos_consolidados'] is not None:
                 st.write("**🔗 Correlação entre Cobertura Vacinal e Casos de Meningite:**")
@@ -1449,6 +1599,34 @@ def show_imunizacao_analysis(dados):
                     )
                     
                     st.plotly_chart(fig_dispersao, use_container_width=True)
+                    
+                    # Explicação da análise de correlação
+                    st.markdown(f"""
+                    #### 📚 **Explicação da Análise de Correlação Cobertura vs Casos:**
+                    
+                    ##### 📊 **Correlação de Pearson = {corr_cobertura_casos:.3f}**
+                    - **O que mede:** Força da relação linear entre cobertura vacinal e casos de meningite
+                    - **Interpretação esperada:** Correlação negativa (mais vacinação = menos casos)
+                    - **Resultado atual:** {"Correlação negativa - conforme esperado!" if corr_cobertura_casos < 0 else "Correlação positiva - necessita investigação!" if corr_cobertura_casos > 0 else "Sem correlação clara"}
+                    
+                    ##### 🎯 **Significância Estatística (p = {p_valor:.4f})**
+                    - **p < 0.05:** Relação estatisticamente significativa
+                    - **p ≥ 0.05:** Relação pode ser devida ao acaso
+                    - **Resultado:** {"Relação significativa e confiável" if p_valor < 0.05 else "Relação não significativa"}
+                    
+                    ##### 📖 **Interpretação do Gráfico de Dispersão:**
+                    - **Eixo X:** Cobertura vacinal (% ou doses)
+                    - **Eixo Y:** Número de casos de meningite
+                    - **Pontos:** Cada ponto representa um ano específico
+                    - **Tamanho dos pontos:** Proporcional à cobertura vacinal
+                    - **Padrão ideal:** Pontos formando linha descendente (mais vacinação = menos casos)
+                    
+                    ##### ⚠️ **Considerações Importantes:**
+                    - **Defasagem temporal:** Efeito da vacinação pode aparecer com atraso
+                    - **Fatores confundidores:** Outros fatores podem influenciar a incidência
+                    - **Imunidade coletiva:** Efeito mais pronunciado com cobertura >95%
+                    - **Tipos de meningite:** Nem todas são preveníveis por vacina
+                    """)
         
         # Análise regional da cobertura
         st.subheader("🗺️ **Análise Regional da Cobertura**")
@@ -1612,15 +1790,18 @@ def show_imunizacao_analysis(dados):
                 serie = serie[(serie['Ano'] >= 1900) & (serie['Ano'] <= 2100)]
                 serie['Ano'] = pd.to_datetime(serie['Ano'].astype(int), format='%Y', errors='coerce')
                 serie = serie.set_index('Ano')
-                modelo_arima = ARIMA(serie['Valor'], order=(1, 1, 1)).fit()
-                previsao = modelo_arima.forecast(steps=3)
-                anos_futuros = pd.date_range(start=serie.index[-1] + pd.DateOffset(years=1), periods=3, freq='Y')
+                if not STATSMODELS_AVAILABLE:
+                    st.warning("⚠️ Análise ARIMA não disponível: statsmodels não instalado corretamente")
+                else:
+                    modelo_arima = ARIMA(serie['Valor'], order=(1, 1, 1)).fit()
+                    previsao = modelo_arima.forecast(steps=3)
+                    anos_futuros = pd.date_range(start=serie.index[-1] + pd.DateOffset(years=1), periods=3, freq='Y')
 
-                fig_previsao = go.Figure()
-                fig_previsao.add_trace(go.Scatter(x=serie.index, y=serie['Valor'], mode='markers+lines', name='Observado'))
-                fig_previsao.add_trace(go.Scatter(x=anos_futuros, y=previsao, mode='markers+lines', name='Previsão', line=dict(dash='dash', color='red')))
-                fig_previsao.update_layout(title='Previsão de Doses (ARIMA)', xaxis_title='Ano', yaxis_title='Total de Doses', template='plotly_white')
-                st.plotly_chart(fig_previsao, use_container_width=True)
+                    fig_previsao = go.Figure()
+                    fig_previsao.add_trace(go.Scatter(x=serie.index, y=serie['Valor'], mode='markers+lines', name='Observado'))
+                    fig_previsao.add_trace(go.Scatter(x=anos_futuros, y=previsao, mode='markers+lines', name='Previsão', line=dict(dash='dash', color='red')))
+                    fig_previsao.update_layout(title='Previsão de Doses (ARIMA)', xaxis_title='Ano', yaxis_title='Total de Doses', template='plotly_white')
+                    st.plotly_chart(fig_previsao, use_container_width=True)
 
             except Exception as e:
                 st.warning(f"Erro na previsão ARIMA (doses): {e}")
@@ -1636,7 +1817,11 @@ def show_imunizacao_analysis(dados):
                     cs = cs[(cs['Ano'] >= 1900) & (cs['Ano'] <= 2100)]
                     cs['Ano'] = pd.to_datetime(cs['Ano'].astype(int), format='%Y', errors='coerce')
                     cs = cs.set_index('Ano')
-                    model_cases = ARIMA(cs['Casos_Notificados'], order=(1, 1, 1)).fit()
+                    if STATSMODELS_AVAILABLE:
+                        model_cases = ARIMA(cs['Casos_Notificados'], order=(1, 1, 1)).fit()
+                    else:
+                        st.warning("⚠️ Análise ARIMA não disponível: statsmodels não instalado corretamente")
+                        return
                     fc_cases = model_cases.forecast(steps=3)
                     anos_fut = pd.date_range(start=cs.index[-1] + pd.DateOffset(years=1), periods=3, freq='Y')
 
@@ -1700,39 +1885,118 @@ def show_advanced_analysis(dados):
             # Decomposição sazonal avançada
             try:
                 # Decomposição STL (mais robusta)
-                from statsmodels.tsa.seasonal import STL
-                
-                stl = STL(dados_tempo['Casos_Notificados'], period=min(3, len(dados_tempo)//2))
-                resultado_stl = stl.fit()
-                
-                # Gráfico de decomposição STL
-                fig_stl = make_subplots(
-                    rows=4, cols=1,
-                    subplot_titles=['Original', 'Tendência', 'Sazonal', 'Resíduos'],
-                    vertical_spacing=0.1
-                )
-                
-                fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=dados_tempo['Casos_Notificados'], name='Original'), row=1, col=1)
-                fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=resultado_stl.trend, name='Tendência'), row=2, col=1)
-                fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=resultado_stl.seasonal, name='Sazonal'), row=3, col=1)
-                fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=resultado_stl.resid, name='Resíduos'), row=4, col=1)
-                
-                fig_stl.update_layout(
-                    title="Decomposição STL Avançada",
-                    height=600,
-                    template='plotly_white'
-                )
-                
-                st.plotly_chart(fig_stl, use_container_width=True)
-                
-                # Análise de estacionariedade
-                st.markdown("**📊 Teste de Estacionariedade (ADF):**")
-                from statsmodels.tsa.stattools import adfuller
-                
-                resultado_adf = adfuller(dados_tempo['Casos_Notificados'])
-                st.write(f"**Estatística ADF:** {resultado_adf[0]:.4f}")
-                st.write(f"**P-valor:** {resultado_adf[1]:.4f}")
-                st.write(f"**Estacionário:** {'Sim' if resultado_adf[1] < 0.05 else 'Não'}")
+                if not STATSMODELS_AVAILABLE:
+                    st.warning("⚠️ Análise STL não disponível: statsmodels não instalado corretamente")
+                else:
+                    from statsmodels.tsa.seasonal import STL
+                    
+                    stl = STL(dados_tempo['Casos_Notificados'], period=min(3, len(dados_tempo)//2))
+                    resultado_stl = stl.fit()
+                    
+                    # Gráfico de decomposição STL
+                    fig_stl = make_subplots(
+                        rows=4, cols=1,
+                        subplot_titles=['Original', 'Tendência', 'Sazonal', 'Resíduos'],
+                        vertical_spacing=0.1
+                    )
+                    
+                    fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=dados_tempo['Casos_Notificados'], name='Original'), row=1, col=1)
+                    fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=resultado_stl.trend, name='Tendência'), row=2, col=1)
+                    fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=resultado_stl.seasonal, name='Sazonal'), row=3, col=1)
+                    fig_stl.add_trace(go.Scatter(x=dados_tempo.index, y=resultado_stl.resid, name='Resíduos'), row=4, col=1)
+                    
+                    fig_stl.update_layout(
+                        title="Decomposição STL Avançada",
+                        height=600,
+                        template='plotly_white'
+                    )
+                    
+                    st.plotly_chart(fig_stl, use_container_width=True)
+                    
+                    # Explicação detalhada da decomposição STL
+                    st.markdown("""
+                    #### 📚 **Explicação da Decomposição STL (Seasonal and Trend decomposition using Loess):**
+                    
+                    ##### 🎯 **O que é a decomposição STL:**
+                    - **Técnica estatística avançada** que separa uma série temporal em componentes
+                    - **STL = Seasonal and Trend decomposition using Loess**
+                    - **Mais robusta** que métodos clássicos para dados irregulares
+                    - **Flexível** para diferentes tipos de sazonalidade
+                    
+                    ##### 📊 **Os 4 componentes visualizados:**
+                    
+                    **1. 📈 Série Original (1º gráfico):**
+                    - Dados brutos de casos de meningite ao longo do tempo
+                    - Mostra a série completa sem decomposição
+                    
+                    **2. 📉 Tendência (2º gráfico):**
+                    - **Direção geral** da série ao longo do tempo
+                    - Remove flutuações de curto prazo
+                    - **Crescente:** Aumento sustentado de casos
+                    - **Decrescente:** Redução sustentada de casos
+                    - **Estável:** Sem mudança direcional clara
+                    
+                    **3. 🔄 Componente Sazonal (3º gráfico):**
+                    - **Padrões repetitivos** em períodos fixos
+                    - Mostra variações sistemáticas (anuais, mensais)
+                    - **Picos regulares:** Épocas de maior incidência
+                    - **Vales regulares:** Épocas de menor incidência
+                    
+                    **4. 🎲 Resíduos (4º gráfico):**
+                    - **Variações aleatórias** não explicadas
+                    - Diferença entre série real e componentes
+                    - **Próximo a zero:** Boa decomposição
+                    - **Padrões nos resíduos:** Componentes não capturados
+                    
+                    ##### 🔬 **Importância epidemiológica:**
+                    - **Tendência:** Avalia eficácia de políticas de longo prazo
+                    - **Sazonalidade:** Identifica períodos de risco para planejamento
+                    - **Resíduos:** Detecta eventos atípicos (surtos, mudanças súbitas)
+                    - **Previsão:** Base para modelos preditivos
+                    """)
+                    
+                    # Análise de estacionariedade
+                    st.markdown("**📊 Teste de Estacionariedade (ADF):**")
+                    from statsmodels.tsa.stattools import adfuller
+                    
+                    resultado_adf = adfuller(dados_tempo['Casos_Notificados'])
+                    st.write(f"**Estatística ADF:** {resultado_adf[0]:.4f}")
+                    st.write(f"**P-valor:** {resultado_adf[1]:.4f}")
+                    st.write(f"**Estacionário:** {'Sim' if resultado_adf[1] < 0.05 else 'Não'}")
+                    
+                    # Explicação detalhada do teste ADF
+                    st.markdown(f"""
+                    #### 📚 **Explicação do Teste ADF (Augmented Dickey-Fuller):**
+                    
+                    ##### 🎯 **O que é estacionariedade:**
+                    - **Série estacionária:** Propriedades estatísticas não mudam ao longo do tempo
+                    - **Média constante:** Não há tendência crescente ou decrescente
+                    - **Variância constante:** Flutuações similares em todo período
+                    - **Autocorrelação estável:** Padrões de dependência temporal consistentes
+                    
+                    ##### 📊 **Teste ADF - Resultados atuais:**
+                    - **Estatística ADF:** {resultado_adf[0]:.4f}
+                      - Valores mais negativos indicam maior evidência de estacionariedade
+                      - Compara com valores críticos (-3.43, -2.86, -2.57)
+                    
+                    - **P-valor:** {resultado_adf[1]:.4f}
+                      - p < 0.05: Rejeita hipótese nula (série É estacionária)
+                      - p ≥ 0.05: Não rejeita hipótese nula (série NÃO é estacionária)
+                    
+                    - **Interpretação:** {"Série ESTACIONÁRIA" if resultado_adf[1] < 0.05 else "Série NÃO-ESTACIONÁRIA"}
+                    
+                    ##### 🔬 **Importância para análise:**
+                    - **Série estacionária:** Ideal para modelagem e previsão
+                    - **Série não-estacionária:** Necessita transformações (diferenciação, log)
+                    - **Aplicação epidemiológica:** Determina se tendências são temporárias ou persistentes
+                    - **Modelos ARIMA:** Requer estacionariedade para funcionar adequadamente
+                    
+                    ##### ⚠️ **Implicações práticas:**
+                    {"- **Dados adequados** para previsão direta" if resultado_adf[1] < 0.05 else "- **Dados necessitam transformação** antes da modelagem"}
+                    {"- **Flutuações em torno de média estável**" if resultado_adf[1] < 0.05 else "- **Presença de tendências ou mudanças estruturais**"}
+                    {"- **Modelos mais simples são aplicáveis**" if resultado_adf[1] < 0.05 else "- **Modelos mais complexos são necessários**"}
+                    """)
+                    
                 
             except Exception as e:
                 st.warning(f"Erro na decomposição STL: {e}")
@@ -1782,7 +2046,48 @@ def show_advanced_analysis(dados):
                 fig_cruzada.update_layout(template='plotly_white')
                 st.plotly_chart(fig_cruzada, use_container_width=True)
                 
+                # Explicação detalhada da correlação cruzada
+                st.markdown("""
+                #### 📚 **Explicação da Análise de Correlação Cruzada:**
+                
+                ##### 🎯 **O que é correlação cruzada:**
+                - **Medida de associação** entre diferentes sorogrupos ao longo do tempo
+                - **Identifica padrões sincronizados** ou opostos entre sorogrupos
+                - **Análise multivariada** que examina relacionamentos complexos
+                
+                ##### 📊 **Interpretação do gráfico:**
+                - **Eixo X:** Primeiro sorogrupo de cada par
+                - **Eixo Y:** Valor da correlação (-1 a +1)
+                - **Cores:** Segundo sorogrupo do par
+                - **Barras positivas:** Sorogrupos variam na mesma direção
+                - **Barras negativas:** Sorogrupos variam em direções opostas
+                
+                ##### 🔬 **Significado epidemiológico:**
+                
+                **Correlação Positiva (+):**
+                - Sorogrupos aumentam/diminuem juntos
+                - Possíveis fatores comuns (clima, políticas, vigilância)
+                - Resposta similar a intervenções
+                
+                **Correlação Negativa (-):**
+                - Um sorogrupo aumenta quando outro diminui
+                - Possível competição ou substituição
+                - Diferenças na eficácia de vacinas específicas
+                
+                **Correlação próxima a zero:**
+                - Sorogrupos evoluem independentemente
+                - Fatores de risco diferentes
+                - Dinâmicas epidemiológicas distintas
+                
+                ##### 📈 **Aplicações práticas:**
+                - **Planejamento de vacinas:** Priorizar sorogrupos correlacionados
+                - **Vigilância:** Monitorar sorogrupos em conjunto
+                - **Previsão:** Usar comportamento de um para prever outro
+                - **Investigação:** Identificar fatores de risco comuns
+                """)
+                
                 # Tabela de correlações
+                st.markdown("#### 📋 **Tabela Detalhada de Correlações:**")
                 st.dataframe(df_cruzada.round(3))
         
         # Análise de regressão múltipla (revista)
@@ -1839,6 +2144,66 @@ def show_advanced_analysis(dados):
                 fig_reg.add_trace(go.Scatter(x=[min_val, max_val], y=[min_val, max_val], mode='lines', name='Identidade', line=dict(dash='dash', color='red')))
                 fig_reg.update_layout(title='Regressão: Casos vs Fatores (Doses, Tendência, Defasagens)', xaxis_title='Casos Reais', yaxis_title='Casos Previstos', template='plotly_white')
                 st.plotly_chart(fig_reg, use_container_width=True)
+                
+                # Explicação do gráfico de regressão
+                st.markdown("""
+                #### 📖 **Interpretação do Gráfico de Regressão:**
+                - **Eixo X (Horizontal):** Casos reais observados
+                - **Eixo Y (Vertical):** Casos previstos pelo modelo
+                - **Pontos azuis:** Cada ponto representa um ano (casos reais vs. previstos)
+                - **Linha tracejada vermelha:** Linha de identidade (previsão perfeita)
+                - **Proximidade à linha:** Quanto mais próximos os pontos estão da linha, melhor o modelo
+                - **Dispersão:** Pontos muito espalhados indicam baixa precisão do modelo
+                """)
+                
+                # Mostrar métricas de qualidade do ajuste
+                st.markdown("### 📊 **Métricas de Qualidade do Modelo:**")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.metric('R² (in-sample)', f"{r2:.3f}")
+                    
+                with col2:
+                    st.metric('RMSE (in-sample)', f"{rmse:.0f}")
+                
+                # Explicação detalhada das métricas
+                st.markdown(f"""
+                #### 📚 **Explicação das Métricas de Regressão:**
+                
+                ##### 📈 **R² = {r2:.3f}**
+                - **O que é:** Coeficiente de determinação, mede o quanto o modelo explica a variação nos dados
+                - **Escala:** 0 a 1 (pode ser negativo se o modelo for muito ruim)
+                - **Interpretação atual:** O modelo explica {r2*100:.1f}% da variação nos casos de meningite
+                - **Qualidade:**
+                  - R² > 0.8: Excelente
+                  - R² 0.6-0.8: Bom
+                  - R² 0.4-0.6: Moderado
+                  - R² < 0.4: Fraco
+                  - **Seu modelo:** {"Excelente" if r2 > 0.8 else "Bom" if r2 > 0.6 else "Moderado" if r2 > 0.4 else "Fraco"}
+                
+                ##### 📏 **RMSE = {rmse:.0f}**
+                - **O que é:** Raiz do Erro Quadrático Médio, mede o erro típico das previsões
+                - **Unidade:** Número de casos (mesma unidade dos dados)
+                - **Interpretação:** Em média, o modelo erra {rmse:.0f} casos para mais ou para menos
+                - **Utilidade:** Quanto menor, melhor a precisão das previsões
+                """)
+                
+                # Mostrar importância das variáveis
+                if hasattr(modelo_reg, 'coef_') and hasattr(modelo_reg, 'feature_names_in_'):
+                    st.markdown("#### 🎯 **Importância das Variáveis:**")
+                    coefs = pd.DataFrame({
+                        'Variável': feature_cols,
+                        'Coeficiente': modelo_reg.coef_,
+                        'Importância_Abs': np.abs(modelo_reg.coef_)
+                    }).sort_values('Importância_Abs', ascending=False)
+                    st.dataframe(coefs)
+                    
+                    st.markdown("""
+                    **📊 Interpretação dos Coeficientes:**
+                    - **Coeficiente positivo:** Aumento na variável leva a aumento nos casos
+                    - **Coeficiente negativo:** Aumento na variável leva à diminuição nos casos
+                    - **Magnitude:** Quanto maior o valor absoluto, maior o impacto da variável
+                    """)
 
                 # Validação temporal e diagnóstico
                 st.subheader('📏 Validação Temporal (TimeSeriesSplit)')
@@ -1863,8 +2228,40 @@ def show_advanced_analysis(dados):
                         cv_df = pd.DataFrame(cv_rows)
                         st.dataframe(cv_df)
                         r2_valid = cv_df['R2'].dropna()
-                        st.metric('R² médio (CV)', f"{(r2_valid.mean() if not r2_valid.empty else 0.0):.3f}")
-                        st.metric('RMSE médio (CV)', f"{cv_df['RMSE'].mean():.0f}")
+                        r2_cv_mean = r2_valid.mean() if not r2_valid.empty else 0.0
+                        rmse_cv_mean = cv_df['RMSE'].mean()
+                        
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric('R² médio (CV)', f"{r2_cv_mean:.3f}")
+                        with col2:
+                            st.metric('RMSE médio (CV)', f"{rmse_cv_mean:.0f}")
+                            
+                        # Explicação da validação cruzada temporal
+                        st.markdown(f"""
+                        #### 📚 **Explicação da Validação Cruzada Temporal:**
+                        
+                        **🔄 O que é:** Técnica que avalia a capacidade do modelo de prever dados futuros
+                        
+                        **🕒 Como funciona:**
+                        - Divide os dados em sequências temporais
+                        - Treina com dados do passado, testa com dados do futuro
+                        - Repete o processo várias vezes
+                        
+                        **📊 Métricas obtidas:**
+                        - **R² médio (CV) = {r2_cv_mean:.3f}**
+                          - Performance média em dados não vistos
+                          - {"Melhor que in-sample" if r2_cv_mean > r2 else "Pior que in-sample" if r2_cv_mean < r2 else "Similar ao in-sample"} (in-sample = {r2:.3f})
+                        
+                        - **RMSE médio (CV) = {rmse_cv_mean:.0f}**
+                          - Erro médio em dados não vistos
+                          - {"Melhor que in-sample" if rmse_cv_mean < rmse else "Pior que in-sample" if rmse_cv_mean > rmse else "Similar ao in-sample"} (in-sample = {rmse:.0f})
+                        
+                        **🎯 Interpretação:**
+                        - Se CV ≈ in-sample: modelo generaliza bem
+                        - Se CV << in-sample: possível overfitting
+                        - Se CV >> in-sample: possível underfitting ou dados inadequados
+                        """)
                 except Exception as _:
                     st.info('ℹ️ Não foi possível calcular a validação temporal nesta amostra.')
 
@@ -1875,13 +2272,20 @@ def show_advanced_analysis(dados):
                 fig_res = px.line(x=anos_plot, y=residuos, markers=True, title='Resíduos ao longo do tempo')
                 fig_res.update_layout(xaxis_title='Ano', yaxis_title='Resíduo (Casos)', template='plotly_white')
                 st.plotly_chart(fig_res, use_container_width=True)
-
-                # Métricas in-sample
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric('R² (in-sample)', f"{r2:.3f}")
-                with col2:
-                    st.metric('RMSE (in-sample)', f"{rmse:.0f}")
+                
+                # Explicação do gráfico de resíduos
+                st.markdown("""
+                #### 📖 **Interpretação do Gráfico de Resíduos:**
+                - **Eixo X (Horizontal):** Anos
+                - **Eixo Y (Vertical):** Resíduos (diferença entre casos reais e previstos)
+                - **Linha:** Mostra os erros do modelo ao longo do tempo
+                - **Padrões a observar:**
+                  - **Linha horizontal próxima a zero:** Modelo bem ajustado
+                  - **Tendências sistemáticas:** Modelo pode estar perdendo padrões importantes
+                  - **Variabilidade constante:** Boa qualidade dos resíduos
+                  - **Variabilidade crescente/decrescente:** Possível heteroscedasticidade
+                - **Interpretação epidemiológica:** Resíduos grandes podem indicar anos com eventos especiais (surtos, mudanças de política)
+                """)
             else:
                 st.info('ℹ️ Dados anuais insuficientes para regressão múltipla.')
         except Exception as e:
@@ -1977,6 +2381,22 @@ def show_advanced_analysis(dados):
                         )
                         
                         st.plotly_chart(fig_cluster_hier, use_container_width=True)
+                        
+                        # Explicação do gráfico de clustering hierárquico
+                        st.markdown(f"""
+                        #### 📖 **Interpretação do Clustering Hierárquico:**
+                        - **Eixo X (Horizontal):** Número de casos por sorogrupo
+                        - **Eixo Y (Vertical):** Taxa de letalidade (%) por sorogrupo
+                        - **Cores diferentes:** Cada cor representa um cluster hierárquico
+                        - **Método Ward:** Minimiza a variância intra-cluster
+                        - **Vantagem:** Não requer definir número de clusters a priori
+                        
+                        #### 🌳 **Diferença do K-Means:**
+                        - **Hierárquico:** Cria árvore de relacionamentos (dendrograma)
+                        - **Determinístico:** Sempre produz o mesmo resultado
+                        - **Flexível:** Permite escolher número de clusters após análise
+                        - **Interpretabilidade:** Mostra hierarquia de similaridades
+                        """)
                         
                         # Resumo dos clusters
                         st.write("**📋 Resumo dos Clusters:**")
@@ -2087,6 +2507,35 @@ def show_regional_analysis(dados):
         
         st.plotly_chart(fig_temporal_regional, use_container_width=True)
         
+        # Explicação detalhada do gráfico de evolução temporal
+        st.markdown("""
+        #### 📚 **Explicação da Evolução Temporal por Região:**
+        
+        ##### 🎯 **O que este gráfico mostra:**
+        - **Cada linha colorida** representa uma região do Brasil
+        - **Eixo X:** Anos do período analisado
+        - **Eixo Y:** Total de doses aplicadas
+        - **Marcadores:** Dados específicos por ano
+        
+        ##### 📊 **Como interpretar:**
+        - **Linhas ascendentes:** Aumento na vacinação na região
+        - **Linhas descendentes:** Redução na vacinação (possível problema)
+        - **Linhas paralelas:** Regiões com comportamento similar
+        - **Divergência:** Diferenças crescentes entre regiões
+        
+        ##### 🔍 **Importância epidemiológica:**
+        - **Identificação de desigualdades regionais** na cobertura vacinal
+        - **Monitoramento da eficácia** das políticas regionais
+        - **Planejamento de recursos** baseado em tendências
+        - **Detecção precoce** de problemas regionais específicos
+        
+        ##### ⚠️ **Sinais de alerta a observar:**
+        - Regiões com **tendência decrescente** persistente
+        - **Grandes disparidades** entre regiões
+        - **Estagnação** em níveis baixos de cobertura
+        - **Variabilidade excessiva** ano a ano
+        """)
+        
         # Estatísticas regionais
         st.subheader("📊 **Estatísticas Regionais**")
         
@@ -2116,6 +2565,16 @@ def show_regional_analysis(dados):
             )
             
             st.plotly_chart(fig_barras_regional, use_container_width=True)
+            
+            # Explicação do gráfico de total de doses por região
+            st.markdown("""
+            **📖 Gráfico de Total de Doses por Região:**
+            - **Barras:** Altura representa total acumulado
+            - **Cores:** Diferencia as regiões visualmente
+            - **Números:** Valores exatos sobre as barras
+            - **Interpretação:** Identifica regiões com maior/menor volume total
+            - **Aplicação:** Alocação proporcional de recursos
+            """)
         
         with col2:
             # Gráfico de cobertura média
@@ -2141,6 +2600,37 @@ def show_regional_analysis(dados):
             )
             
             st.plotly_chart(fig_cobertura_regional, use_container_width=True)
+            
+            # Explicação do gráfico de cobertura média por região
+            st.markdown("""
+            **📖 Gráfico de Cobertura Média por Região:**
+            - **Barras:** Altura representa percentual de cobertura
+            - **Escala de cores:** Intensidade proporcional à cobertura
+            - **Meta ideal:** >95% para imunidade coletiva
+            - **Interpretação:** Avalia eficácia regional
+            - **Aplicação:** Priorização de intervenções
+            """)
+        
+        # Análise comparativa detalhada das duas métricas
+        st.markdown(f"""
+        #### 🔬 **Análise Comparativa Total vs Cobertura:**
+        
+        ##### 📊 **Por que analisar ambas as métricas:**
+        - **Total de doses:** Mede **volume absoluto** de vacinação
+        - **Cobertura média:** Mede **eficiência relativa** à população
+        
+        ##### 🎯 **Interpretações possíveis:**
+        - **Alto total + Alta cobertura:** Região populosa bem atendida
+        - **Alto total + Baixa cobertura:** Região populosa com lacunas
+        - **Baixo total + Alta cobertura:** Região pequena bem atendida
+        - **Baixo total + Baixa cobertura:** Região que necessita atenção
+        
+        ##### 📈 **Cobertura atual por região:**
+        {f"- **Média geral:** {media_cobertura:.1f}%" if 'media_cobertura' in locals() else ""}
+        - **Meta OMS:** >95% para controle efetivo
+        - **Situação crítica:** Regiões <70%
+        - **Situação boa:** Regiões >95%
+        """)
         
         # Comparação dos últimos 3 anos
         st.subheader("🔄 **Comparação dos Últimos 3 Anos por Região**")
@@ -2168,6 +2658,34 @@ def show_regional_analysis(dados):
             )
             
             st.plotly_chart(fig_comparacao, use_container_width=True)
+            
+            # Explicação do gráfico de comparação temporal
+            st.markdown(f"""
+            #### 📖 **Interpretação da Comparação dos Últimos 3 Anos:**
+            
+            ##### 🎯 **O que este gráfico mostra:**
+            - **Barras agrupadas** por região, cada cor representa um ano
+            - **Evolução temporal** recente da vacinação regional
+            - **Comparação direta** entre regiões no mesmo período
+            
+            ##### 📊 **Como analisar:**
+            - **Barras crescentes:** Melhoria ao longo dos anos
+            - **Barras decrescentes:** Redução preocupante
+            - **Padrões uniformes:** Política nacional consistente
+            - **Padrões divergentes:** Diferenças regionais específicas
+            
+            ##### 🔍 **Indicadores importantes:**
+            - **Tendência geral:** {"Crescimento" if anos_recentes else "A ser avaliada"}
+            - **Homogeneidade:** Regiões com comportamento similar
+            - **Outliers:** Regiões com comportamento atípico
+            - **Sustentabilidade:** Manutenção dos níveis ano a ano
+            
+            ##### 📈 **Aplicações práticas:**
+            - **Identificação de best practices** regionais
+            - **Detecção de problemas emergentes**
+            - **Planejamento de recursos** para próximos anos
+            - **Avaliação de políticas** implementadas
+            """)
         
         # Análise de correlação regional
         st.subheader("🔗 **Análise de Correlação Regional**")
@@ -2195,9 +2713,33 @@ def show_regional_analysis(dados):
                         x='Total_Doses',
                         y='Casos',
                         text='Regiao',
-                        trendline='ols',
                         title='Casos vs Total de Doses por Região'
                     )
+                    
+                    # Adicionar linha de tendência manual
+                    if len(base_merge) > 1:
+                        x_vals = base_merge['Total_Doses'].values
+                        y_vals = base_merge['Casos'].values
+                        
+                        # Remover NaN values
+                        mask = ~(np.isnan(x_vals) | np.isnan(y_vals))
+                        x_clean = x_vals[mask]
+                        y_clean = y_vals[mask]
+                        
+                        if len(x_clean) > 1:
+                            # Calcular regressão linear usando numpy
+                            coeffs = np.polyfit(x_clean, y_clean, 1)
+                            x_trend = np.linspace(x_clean.min(), x_clean.max(), 100)
+                            y_trend = coeffs[0] * x_trend + coeffs[1]
+                            
+                            # Adicionar linha de tendência
+                            fig_disp.add_trace(go.Scatter(
+                                x=x_trend,
+                                y=y_trend,
+                                mode='lines',
+                                name='Linha de Tendência',
+                                line=dict(color='red', dash='dash')
+                            ))
                     fig_disp.update_traces(textposition='top center')
                     fig_disp.update_layout(template='plotly_white')
                     st.plotly_chart(fig_disp, use_container_width=True)
@@ -2448,6 +2990,37 @@ def show_attack_rate_analysis(dados):
         
         st.plotly_chart(fig_taxa_ataque, use_container_width=True)
         
+        # Explicação do conceito de taxa de ataque e do gráfico
+        st.markdown(f"""
+        #### 📚 **Explicação da Taxa de Ataque:**
+        
+        ##### 🎯 **O que é Taxa de Ataque:**
+        - **Definição:** Proporção de pessoas que desenvolvem a doença em uma população específica durante um período determinado
+        - **Unidade:** Casos por 100.000 habitantes por ano
+        - **Cálculo:** (Número de casos / População total) × 100.000
+        - **Utilidade:** Padroniza a incidência para comparação entre diferentes populações e períodos
+        
+        ##### 📊 **Interpretação do Gráfico:**
+        - **Eixo X:** Anos do período analisado
+        - **Eixo Y:** Taxa de ataque por 100.000 habitantes
+        - **Linha com marcadores:** Evolução temporal da incidência padronizada
+        - **Tendência crescente:** Aumento da incidência na população
+        - **Tendência decrescente:** Redução da incidência (possivelmente devido a vacinação)
+        - **Variações anuais:** Podem refletir surtos, mudanças epidemiológicas ou melhorias na vigilância
+        
+        ##### 📈 **Taxa de Ataque Atual: {taxa_ataque_geral:.1f}/100k habitantes**
+        - **Baixa:** < 1,0/100k (situação controlada)
+        - **Moderada:** 1,0-5,0/100k (vigilância necessária)
+        - **Alta:** > 5,0/100k (situação de alerta)
+        - **Classificação atual:** {"Baixa - situação controlada" if taxa_ataque_geral < 1.0 else "Moderada - vigilância necessária" if taxa_ataque_geral < 5.0 else "Alta - situação de alerta"}
+        
+        ##### 🌍 **Contexto Epidemiológico:**
+        - **OMS recomenda:** Taxa < 2,0/100k como meta de controle
+        - **Países desenvolvidos:** Geralmente < 1,0/100k
+        - **Imunidade coletiva:** Taxa diminui com alta cobertura vacinal
+        - **Vigilância epidemiológica:** Monitoramento contínuo é essencial
+        """)
+        
         # Análise de força de infecção
         st.subheader("🦠 **Análise de Força de Infecção**")
         
@@ -2472,6 +3045,30 @@ def show_attack_rate_analysis(dados):
         )
         
         st.plotly_chart(fig_forca_infeccao, use_container_width=True)
+        
+        # Explicação da força de infecção
+        st.markdown("""
+        #### 📚 **Explicação da Força de Infecção:**
+        
+        ##### 🦠 **O que é Força de Infecção:**
+        - **Definição:** Taxa instantânea na qual indivíduos suscetíveis adquirem infecção
+        - **Fórmula:** λ = -ln(1 - taxa de ataque)
+        - **Interpretação:** Intensidade da transmissão da doença na população
+        - **Unidade:** Por unidade de tempo (geralmente por ano)
+        
+        ##### 📊 **Interpretação do Gráfico:**
+        - **Eixo X:** Anos do período analisado
+        - **Eixo Y:** Força de infecção (λ)
+        - **Linha:** Intensidade da transmissão ao longo do tempo
+        - **Valores altos:** Maior intensidade de transmissão
+        - **Valores baixos:** Menor intensidade de transmissão
+        
+        ##### 🔬 **Importância Epidemiológica:**
+        - **Modelagem matemática:** Base para modelos de transmissão
+        - **Planejamento de intervenções:** Identifica períodos de alta transmissão
+        - **Avaliação de controle:** Monitora eficácia das medidas de prevenção
+        - **Comparação temporal:** Permite comparar diferentes períodos epidemiológicos
+        """)
         
         # Análise de sazonalidade da taxa de ataque usando SIH (dados reais)
         st.subheader("📅 **Sazonalidade da Taxa de Ataque (SIH)**")
@@ -2502,6 +3099,31 @@ def show_attack_rate_analysis(dados):
                     template='plotly_white'
                 )
                 st.plotly_chart(fig_sazonal, use_container_width=True)
+                
+                # Explicação do gráfico de sazonalidade
+                st.markdown("""
+                #### 📖 **Interpretação da Sazonalidade da Taxa de Ataque:**
+                - **Eixo X:** Meses do ano (Jan a Dez)
+                - **Eixo Y:** Taxa de ataque mensal por 100.000 habitantes
+                - **Barras coloridas:** Intensidade da cor reflete a magnitude da taxa
+                - **Dados:** Baseados em hospitalizações do SIH (proxy para casos graves)
+                
+                ##### 🌡️ **Padrões Sazonais Esperados:**
+                - **Inverno (Jun-Ago):** Maior incidência devido a:
+                  - Aglomeração em ambientes fechados
+                  - Redução da umidade relativa
+                  - Menor ventilação
+                - **Verão (Dez-Fev):** Menor incidência devido a:
+                  - Maior dispersão populacional
+                  - Melhor ventilação dos ambientes
+                  - Condições climáticas desfavoráveis ao patógeno
+                
+                ##### 📊 **Utilidade da Análise:**
+                - **Planejamento de recursos:** Antecipar picos de demanda hospitalar
+                - **Campanhas preventivas:** Intensificar ações nos meses de risco
+                - **Vigilância epidemiológica:** Monitoramento direcionado
+                - **Políticas de saúde:** Adequação de estratégias por período
+                """)
             else:
                 st.info("ℹ️ Estrutura de SIH não possui colunas esperadas para sazonalidade (Mês_Num, Casos_Hospitalares)")
         else:
@@ -2532,9 +3154,33 @@ def show_attack_rate_analysis(dados):
                     taxa_ataque_anual,
                     x='Taxa_Ataque',
                     y='Taxa_Letalidade',
-                    title="Correlação: Taxa de Ataque vs Letalidade",
-                    trendline="ols"
+                    title="Correlação: Taxa de Ataque vs Letalidade"
                 )
+                
+                # Adicionar linha de tendência manual usando numpy
+                if len(taxa_ataque_anual) > 1:
+                    x_vals = taxa_ataque_anual['Taxa_Ataque'].values
+                    y_vals = taxa_ataque_anual['Taxa_Letalidade'].values
+                    
+                    # Remover NaN values
+                    mask = ~(np.isnan(x_vals) | np.isnan(y_vals))
+                    x_clean = x_vals[mask]
+                    y_clean = y_vals[mask]
+                    
+                    if len(x_clean) > 1:
+                        # Calcular regressão linear usando numpy
+                        coeffs = np.polyfit(x_clean, y_clean, 1)
+                        x_trend = np.linspace(x_clean.min(), x_clean.max(), 100)
+                        y_trend = coeffs[0] * x_trend + coeffs[1]
+                        
+                        # Adicionar linha de tendência
+                        fig_correlacao.add_trace(go.Scatter(
+                            x=x_trend,
+                            y=y_trend,
+                            mode='lines',
+                            name='Linha de Tendência',
+                            line=dict(color='red', dash='dash')
+                        ))
                 
                 fig_correlacao.update_layout(
                     xaxis_title="Taxa de Ataque (por 100.000 habitantes)",
@@ -2543,6 +3189,45 @@ def show_attack_rate_analysis(dados):
                 )
                 
                 st.plotly_chart(fig_correlacao, use_container_width=True)
+                
+                # Explicação da correlação taxa de ataque vs letalidade
+                st.markdown(f"""
+                #### 📚 **Explicação da Correlação Taxa de Ataque vs Letalidade:**
+                
+                ##### 📊 **Correlação de Pearson = {correlacao:.3f}**
+                - **O que mede:** Relação linear entre incidência e gravidade da doença
+                - **Interpretação:**
+                  - **Correlação positiva:** Maior incidência associada a maior letalidade
+                  - **Correlação negativa:** Maior incidência associada a menor letalidade
+                  - **Sem correlação:** Incidência e letalidade independentes
+                
+                ##### 📖 **Interpretação do Gráfico:**
+                - **Eixo X:** Taxa de ataque (incidência por 100.000 hab.)
+                - **Eixo Y:** Taxa de letalidade (%)
+                - **Pontos:** Cada ponto representa um ano específico
+                - **Linha tracejada:** Tendência linear da relação
+                
+                ##### 🔬 **Significado Epidemiológico:**
+                - **Correlação positiva pode indicar:**
+                  - Surtos com cepas mais virulentas
+                  - Sobrecarregamento do sistema de saúde
+                  - Diagnóstico tardio em períodos de alta incidência
+                  
+                - **Correlação negativa pode indicar:**
+                  - Melhoria na detecção precoce
+                  - Aumento de casos leves diagnosticados
+                  - Efeito de diluição com mais casos benignos
+                  
+                - **Ausência de correlação pode indicar:**
+                  - Letalidade constante independente da incidência
+                  - Qualidade consistente do atendimento médico
+                  - Distribuição uniforme da virulência das cepas
+                
+                ##### 🎯 **Classificação Atual: {"Forte" if abs(correlacao) > 0.7 else "Moderada" if abs(correlacao) > 0.3 else "Fraca"}**
+                - **Fraca:** |r| < 0.3 - Relação pouco evidente
+                - **Moderada:** 0.3 ≤ |r| < 0.7 - Relação moderada
+                - **Forte:** |r| ≥ 0.7 - Relação bem definida
+                """)
         else:
             st.info("ℹ️ Dados de letalidade não disponíveis para análise de correlação")
         
@@ -3157,6 +3842,596 @@ def show_reports(dados):
     else:
         st.error("❌ Nenhum dado disponível para relatórios")
 
+def show_technical_exposition(dados):
+    """Mostra exposição técnica completa do sistema"""
+    st.header("⚙️ **Expositivo Técnico - Arquitetura e Metodologia**")
+    st.markdown("---")
+    
+    # Introdução
+    st.markdown("""
+    ## 🎯 **Visão Geral do Sistema**
+    
+    Este dashboard representa um sistema completo de análise epidemiológica de meningite no Brasil, 
+    integrando coleta automatizada de dados, processamento estatístico avançado e visualização interativa.
+    """)
+    
+    # Seção 1: Arquitetura de Dados
+    st.header("🏗️ **1. Arquitetura de Dados e Automação**")
+    
+    # Diagrama de fluxo de dados
+    st.subheader("📊 **Fluxo de Dados do Sistema**")
+    
+    # Criar diagrama Mermaid do fluxo de dados
+    diagram_code = """
+    graph TD
+        A[APIs Oficiais<br/>DataSUS, SIPNI, SIH] --> B[Sistema de Automação<br/>Web Scraping + APIs]
+        B --> C[Extração Automatizada<br/>Python + Requests]
+        C --> D[Validação e Limpeza<br/>Pandas + NumPy]
+        D --> E[Armazenamento<br/>Pasta TABELAS/*.csv]
+        E --> F[Carregamento no Dashboard<br/>load_all_data()]
+        F --> G[Processamento Estatístico<br/>SciPy + Scikit-learn]
+        G --> H[Visualização Interativa<br/>Plotly + Streamlit]
+        H --> I[Dashboard Final<br/>Análises Epidemiológicas]
+        
+        style A fill:#e1f5fe
+        style E fill:#f3e5f5
+        style G fill:#e8f5e8
+        style I fill:#fff3e0
+    """
+    
+    st.markdown("#### 🔄 **Diagrama de Fluxo de Dados:**")
+    
+    # Mostrar diagrama de fluxo como código
+    st.code(diagram_code, language='mermaid')
+    
+    # Explicação detalhada da automação
+    st.markdown("""
+    ### 🤖 **Sistema de Automação de Dados**
+    
+    #### 📡 **Fontes de Dados Oficiais:**
+    - **DataSUS (DATASUS):** Sistema de Informações em Saúde
+    - **SIPNI:** Sistema de Informações do Programa Nacional de Imunizações  
+    - **SIH:** Sistema de Informações Hospitalares
+    - **SINAN:** Sistema de Informação de Agravos de Notificação
+    
+    #### 🔧 **Tecnologias de Automação Utilizadas:**
+    
+    **Python Libraries:**
+    - `requests`: Requisições HTTP para APIs
+    - `beautifulsoup4`: Web scraping de páginas HTML
+    - `selenium`: Automação de navegadores web
+    - `pandas`: Manipulação e análise de dados
+    - `numpy`: Computação numérica
+    
+    **Processo Automatizado:**
+    1. **Monitoramento**: Scripts verificam atualizações nas fontes
+    2. **Extração**: Dados são coletados via APIs e web scraping
+    3. **Validação**: Verificação de integridade e consistência
+    4. **Limpeza**: Remoção de duplicatas e tratamento de missing values
+    5. **Padronização**: Formatação uniforme das tabelas
+    6. **Armazenamento**: Salvamento em formato CSV na pasta TABELAS/
+    """)
+    
+    # Seção 2: Estrutura das Tabelas
+    st.header("📋 **2. Estrutura e Utilização das Tabelas**")
+    
+    # Categorizar as tabelas por tipo
+    st.subheader("🗂️ **Categorização das Tabelas de Dados**")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        #### 📊 **Dados Epidemiológicos:**
+        - `casos_consolidados_2017_2024.csv`: Casos notificados agregados
+        - `casos_notificados_2017_2022.csv`: Dados brutos de notificação
+        - `dados_gerais_2024.csv`: Estatísticas gerais do ano atual
+        - `data_meninatu.csv`: Dados específicos de meningite tuberculosa
+        - `tabela_unificada.csv`: Base consolidada principal
+        
+        #### 🦠 **Dados por Sorogrupo:**
+        - `sorogrupos_2024.csv`: Sorogrupos do ano atual
+        - `sorogrupos_consolidados_2007_2024.csv`: Série histórica
+        - `df_sorogrupos_2007_2020.csv`: Dados históricos específicos
+        - `df_sorogrupos_2024.csv`: Dados processados 2024
+        - `df_sorogrupos_completo.csv`: Base completa consolidada
+        """)
+    
+    with col2:
+        st.markdown("""
+        #### 🔬 **Dados de Etiologia:**
+        - `etiologia_2024.csv`: Etiologias identificadas
+        - `etiologias_consolidadas_2007_2024.csv`: Série temporal
+        - `df_etiologia_2024.csv`: Dados processados
+        - `bacterianas_2024.csv`: Meningites bacterianas
+        - `df_bacterianas_2024.csv`: Dados bacterianos processados
+        
+        #### 💉 **Dados de Imunização:**
+        - `imunizacoesmenin.csv`: Dados brutos de vacinação
+        - `cleaned_imunizacoesmenin.csv`: Dados limpos
+        - `imunizacoesmenin_fixed.csv`: Dados corrigidos
+        - `dados_imunizacao_processados.csv`: Base processada
+        - `imunobiologicosem2023a2025.csv`: Imunobiológicos período
+        """)
+    
+    # Análise específica por tipo
+    st.subheader("🔍 **Análise Específica por Categoria**")
+    
+    # Dados de hospitalização
+    st.markdown("""
+    #### 🏥 **Dados Hospitalares (SIH):**
+    - `sih_meningite_hospitalar.csv`: Internações por meningite
+    - `sih_meningite_long.csv`: Formato longo para análises temporais
+    - `sih_meningite_wide.csv`: Formato largo para análises transversais
+    
+    **Tratamentos Aplicados:**
+    - Conversão entre formatos long/wide para diferentes análises
+    - Cálculo de taxas de hospitalização
+    - Análise de sazonalidade nas internações
+    - Correlação com dados de notificação
+    """)
+    
+    # Dados de letalidade
+    st.markdown("""
+    #### ⚰️ **Dados de Letalidade:**
+    - `df_letalidade_2007_2020.csv`: Taxas de letalidade históricas
+    - `letalidade_etiologia_2007_2020.csv`: Letalidade por etiologia
+    
+    **Tratamentos Aplicados:**
+    - Cálculo de taxas de letalidade: (Óbitos/Casos) × 100
+    - Estratificação por etiologia e sorogrupo
+    - Análise temporal da letalidade
+    - Identificação de fatores de risco
+    """)
+    
+    # Dados de imunização detalhados
+    st.markdown("""
+    #### 💉 **Dados de Imunização Estratificados:**
+    - `imunizacao_por_ano.csv`: Evolução anual da cobertura
+    - `imunizacao_por_faixa_etaria.csv`: Cobertura por idade
+    - `imunizacao_por_sorogrupo.csv`: Vacinação específica
+    - `imunizacao_por_uf.csv`: Distribuição geográfica
+    - `doses_todosimunosate2022.csv`: Doses aplicadas por região
+    
+    **Tratamentos Aplicados:**
+    - Padronização de faixas etárias
+    - Cálculo de coberturas vacinais
+    - Análise de disparidades regionais
+    - Correlação cobertura × incidência
+    """)
+    
+    # Seção 3: Metodologias Estatísticas
+    st.header("📈 **3. Metodologias Estatísticas Implementadas**")
+    
+    st.subheader("🔢 **Estatística Descritiva**")
+    st.markdown("""
+    #### 📊 **Medidas de Tendência Central e Dispersão:**
+    - **Média, Mediana, Moda**: Tendências centrais dos dados
+    - **Desvio Padrão, Variância**: Medidas de dispersão
+    - **Quartis e Percentis**: Distribuição dos dados
+    - **Coeficiente de Variação**: Variabilidade relativa
+    
+    **Implementação:**
+    ```python
+    # Exemplo de cálculo de estatísticas descritivas
+    stats_descritivas = dados.describe()
+    cv = dados.std() / dados.mean() * 100  # Coeficiente de Variação
+    ```
+    """)
+    
+    st.subheader("📉 **Análise de Correlação**")
+    st.markdown("""
+    #### 🔗 **Tipos de Correlação Implementados:**
+    
+    **1. Correlação de Pearson:**
+    - Mede relações lineares entre variáveis
+    - Usado para: casos vs letalidade, cobertura vs incidência
+    - Formula: r = Σ((x-x̄)(y-ȳ)) / √(Σ(x-x̄)²Σ(y-ȳ)²)
+    
+    **2. Correlação de Spearman:**
+    - Mede relações monotônicas (não necessariamente lineares)
+    - Robusto a outliers
+    - Baseado em rankings dos dados
+    
+    **3. Correlação Cruzada:**
+    - Análise entre múltiplas variáveis simultaneamente
+    - Identifica padrões complexos entre sorogrupos
+    
+    **Implementação:**
+    ```python
+    from scipy.stats import pearsonr, spearmanr
+    
+    # Correlação de Pearson
+    corr_pearson, p_pearson = pearsonr(x, y)
+    
+    # Correlação de Spearman  
+    corr_spearman, p_spearman = spearmanr(x, y)
+    ```
+    """)
+    
+    st.subheader("📊 **Análise de Regressão**")
+    st.markdown("""
+    #### 📈 **Modelos de Regressão Utilizados:**
+    
+    **1. Regressão Linear Simples:**
+    - Modelo: Y = β₀ + β₁X + ε
+    - Usado para: tendências temporais, relações bivariadas
+    - Métricas: R², RMSE, p-valor
+    
+    **2. Regressão Linear Múltipla:**
+    - Modelo: Y = β₀ + β₁X₁ + β₂X₂ + ... + βₙXₙ + ε
+    - Usado para: análise multivariada de fatores
+    - Validação: Time Series Split para dados temporais
+    
+    **3. Regressão Polinomial:**
+    - Captura relações não-lineares
+    - Usado para: relações complexas entre variáveis
+    
+    **Implementação:**
+    ```python
+    from sklearn.linear_model import LinearRegression
+    from sklearn.model_selection import TimeSeriesSplit
+    from sklearn.metrics import r2_score, mean_squared_error
+    
+    # Modelo de regressão
+    modelo = LinearRegression()
+    modelo.fit(X_train, y_train)
+    
+    # Métricas de avaliação
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    ```
+    """)
+    
+    st.subheader("⏱️ **Análise de Séries Temporais**")
+    st.markdown("""
+    #### 📅 **Técnicas de Séries Temporais:**
+    
+    **1. Decomposição STL (Seasonal and Trend decomposition using Loess):**
+    - Separa série em: Tendência + Sazonalidade + Resíduos
+    - Mais robusta que decomposição clássica
+    - Permite análise de componentes individuais
+    
+    **2. Teste de Estacionariedade (ADF):**
+    - Augmented Dickey-Fuller Test
+    - Verifica se a série é estacionária
+    - Fundamental para modelagem ARIMA
+    
+    **3. Análise de Autocorrelação:**
+    - Identifica padrões de dependência temporal
+    - Usado para detectar sazonalidade
+    
+    **Implementação:**
+    ```python
+    from statsmodels.tsa.seasonal import STL
+    from statsmodels.tsa.stattools import adfuller
+    
+    # Decomposição STL
+    stl = STL(serie_temporal, period=12)
+    resultado = stl.fit()
+    
+    # Teste ADF
+    adf_stat, p_value = adfuller(serie_temporal)[:2]
+    ```
+    """)
+    
+    st.subheader("🤖 **Machine Learning e Clustering**")
+    st.markdown("""
+    #### 🔬 **Algoritmos de Machine Learning:**
+    
+    **1. K-Means Clustering:**
+    - Agrupa sorogrupos por características similares
+    - Identifica padrões epidemiológicos
+    - Usado para: segmentação de sorogrupos
+    
+    **2. Clustering Hierárquico:**
+    - Cria dendrograma de relacionamentos
+    - Método Ward para minimizar variância
+    - Complementa análise K-Means
+    
+    **3. PCA (Principal Component Analysis):**
+    - Redução dimensional preservando variância
+    - Identifica componentes principais
+    - Usado para: visualização de dados multidimensionais
+    
+    **Implementação:**
+    ```python
+    from sklearn.cluster import KMeans
+    from sklearn.decomposition import PCA
+    from scipy.cluster.hierarchy import dendrogram, linkage
+    
+    # K-Means
+    kmeans = KMeans(n_clusters=3, random_state=42)
+    clusters = kmeans.fit_predict(dados_scaled)
+    
+    # PCA
+    pca = PCA(n_components=2)
+    dados_pca = pca.fit_transform(dados_scaled)
+    ```
+    """)
+    
+    # Seção 4: Processo de Visualização
+    st.header("🎨 **4. Processo de Visualização e Interface**")
+    
+    st.subheader("📊 **Biblioteca Plotly - Gráficos Interativos**")
+    st.markdown("""
+    #### 🎯 **Tipos de Gráficos Implementados:**
+    
+    **1. Gráficos de Linha (Time Series):**
+    - Evolução temporal de casos
+    - Tendências de vacinação
+    - Análise de sazonalidade
+    
+    **2. Gráficos de Dispersão (Scatter):**
+    - Correlações entre variáveis
+    - Regressões lineares e polinomiais
+    - Análise multivariada
+    
+    **3. Gráficos de Barras:**
+    - Distribuições por categoria
+    - Comparações regionais
+    - Rankings de incidência
+    
+    **4. Heatmaps:**
+    - Matrizes de correlação
+    - Distribuição geográfica
+    - Padrões sazonais
+    
+    **5. Gráficos de Subplots:**
+    - Decomposição de séries temporais
+    - Análises comparativas
+    - Diagnósticos de modelos
+    """)
+    
+    st.subheader("🖥️ **Streamlit - Framework de Interface**")
+    st.markdown("""
+    #### ⚙️ **Componentes de Interface Utilizados:**
+    
+    **Navegação:**
+    - `st.sidebar.selectbox()`: Menu principal de navegação
+    - `st.tabs()`: Abas dentro de seções
+    - `st.columns()`: Layout responsivo em colunas
+    
+    **Visualização:**
+    - `st.plotly_chart()`: Gráficos interativos
+    - `st.dataframe()`: Tabelas interativas
+    - `st.metric()`: KPIs e métricas principais
+    
+    **Interatividade:**
+    - `st.selectbox()`: Seleção de parâmetros
+    - `st.slider()`: Controles numéricos
+    - `st.checkbox()`: Filtros booleanos
+    
+    **Formatação:**
+    - `st.markdown()`: Texto formatado e explicações
+    - `st.latex()`: Fórmulas matemáticas
+    - `st.code()`: Código de exemplo
+    """)
+    
+    # Seção 5: Performance e Otimização
+    st.header("⚡ **5. Performance e Otimização**")
+    
+    st.markdown("""
+    #### 🚀 **Estratégias de Otimização Implementadas:**
+    
+    **1. Cache de Dados:**
+    ```python
+    @st.cache_data
+    def load_all_data():
+        # Carregamento otimizado com cache
+        return dados_processados
+    ```
+    
+    **2. Processamento Eficiente:**
+    - Uso de `pandas.groupby()` para agregações
+    - Vetorização com `numpy` para cálculos
+    - Lazy loading de dados não utilizados
+    
+    **3. Gestão de Memória:**
+    - Limpeza de DataFrames temporários
+    - Uso de `dtype` apropriados
+    - Garbage collection automático
+    
+    **4. Tratamento de Erros:**
+    - Try-catch para imports condicionais
+    - Validação de dados de entrada
+    - Fallbacks para funcionalidades avançadas
+    """)
+    
+    # Seção 6: Métricas Epidemiológicas
+    st.header("🏥 **6. Métricas Epidemiológicas Calculadas**")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        #### 📊 **Incidência e Prevalência:**
+        
+        **Taxa de Ataque:**
+        ```
+        Taxa = (Casos / População) × 100.000
+        ```
+        
+        **Força de Infecção:**
+        ```
+        λ = -ln(1 - taxa_ataque)
+        ```
+        
+        **Taxa de Letalidade:**
+        ```
+        Letalidade = (Óbitos / Casos) × 100
+        ```
+        """)
+    
+    with col2:
+        st.markdown("""
+        #### 💉 **Cobertura Vacinal:**
+        
+        **Cobertura por Dose:**
+        ```
+        Cobertura = (Doses / Pop_Alvo) × 100
+        ```
+        
+        **Efetividade Vacinal:**
+        ```
+        EV = 1 - (Taxa_Vacinados / Taxa_Não_Vacinados)
+        ```
+        
+        **Imunidade Coletiva:**
+        ```
+        Limiar = 1 - (1/R₀)
+        ```
+        """)
+    
+    # Seção 7: Validação e Qualidade
+    st.header("✅ **7. Validação e Controle de Qualidade**")
+    
+    st.markdown("""
+    #### 🔍 **Processos de Validação Implementados:**
+    
+    **1. Validação de Dados:**
+    - Verificação de tipos de dados (dtype validation)
+    - Detecção de valores missing e outliers
+    - Consistência temporal (datas válidas)
+    - Integridade referencial entre tabelas
+    
+    **2. Validação Estatística:**
+    - Teste de normalidade (Shapiro-Wilk)
+    - Detecção de multicolinearidade (VIF)
+    - Validação cruzada para modelos
+    - Análise de resíduos
+    
+    **3. Validação Epidemiológica:**
+    - Coerência de taxas calculadas
+    - Comparação com literatura científica
+    - Validação de tendências esperadas
+    - Verificação de sazonalidade conhecida
+    
+    **4. Monitoramento Contínuo:**
+    - Logs de processamento de dados
+    - Alertas para anomalias detectadas
+    - Versionamento de dados
+    - Backup automatizado
+    """)
+    
+    # Seção 8: Considerações Técnicas
+    st.header("⚠️ **8. Limitações e Considerações Técnicas**")
+    
+    st.markdown("""
+    #### 🚧 **Limitações Conhecidas:**
+    
+    **1. Dados:**
+    - Dependência da qualidade dos dados oficiais
+    - Possível subnotificação em algumas regiões
+    - Atraso na disponibilização de dados recentes
+    - Mudanças metodológicas nas fontes
+    
+    **2. Estatísticas:**
+    - Modelos assumem distribuições específicas
+    - Correlação não implica causalidade
+    - Séries temporais curtas limitam análises
+    - Possível autocorrelação residual
+    
+    **3. Técnicas:**
+    - Alguns pacotes podem ter incompatibilidades
+    - Análises avançadas requerem dados suficientes
+    - Clustering é sensível à escala dos dados
+    - PCA pode perder interpretabilidade
+    
+    **4. Performance:**
+    - Processamento intensivo para grandes datasets
+    - Limitações de memória para análises complexas
+    - Tempo de carregamento para primeira execução
+    - Dependência de conexão para dados atualizados
+    """)
+    
+    # Seção 9: Estatísticas dos Dados Atuais
+    st.header("📊 **9. Estatísticas dos Dados Atualmente Carregados**")
+    
+    if dados:
+        st.subheader("📈 **Resumo dos Datasets Disponíveis**")
+        
+        # Criar tabela com informações dos datasets
+        datasets_info = []
+        for key, value in dados.items():
+            if isinstance(value, pd.DataFrame):
+                datasets_info.append({
+                    'Dataset': key,
+                    'Linhas': f"{value.shape[0]:,}",
+                    'Colunas': value.shape[1],
+                    'Memória (MB)': f"{value.memory_usage(deep=True).sum() / 1024**2:.2f}",
+                    'Período': 'Variável',
+                    'Tipo': 'DataFrame'
+                })
+            else:
+                datasets_info.append({
+                    'Dataset': key,
+                    'Linhas': '-',
+                    'Colunas': '-',
+                    'Memória (MB)': '-',
+                    'Período': '-',
+                    'Tipo': type(value).__name__
+                })
+        
+        df_info = pd.DataFrame(datasets_info)
+        st.dataframe(df_info, use_container_width=True)
+        
+        # Estatísticas gerais
+        total_linhas = sum([v.shape[0] for v in dados.values() if isinstance(v, pd.DataFrame)])
+        total_memoria = sum([v.memory_usage(deep=True).sum() for v in dados.values() if isinstance(v, pd.DataFrame)])
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("📊 Total de Datasets", len(dados))
+        with col2:
+            st.metric("📝 Total de Registros", f"{total_linhas:,}")
+        with col3:
+            st.metric("💾 Memória Total", f"{total_memoria/1024**2:.1f} MB")
+        with col4:
+            st.metric("🗂️ Tabelas CSV", len([f for f in os.listdir('TABELAS') if f.endswith('.csv')]))
+        
+        # Análise de qualidade dos dados
+        st.subheader("🔍 **Análise de Qualidade dos Dados**")
+        
+        qualidade_info = []
+        for key, value in dados.items():
+            if isinstance(value, pd.DataFrame) and not value.empty:
+                missing_percent = (value.isnull().sum().sum() / (value.shape[0] * value.shape[1])) * 100
+                duplicatas = value.duplicated().sum()
+                
+                qualidade_info.append({
+                    'Dataset': key,
+                    'Missing Values (%)': f"{missing_percent:.2f}%",
+                    'Duplicatas': duplicatas,
+                    'Completude': f"{100-missing_percent:.1f}%",
+                    'Status': "✅ Boa" if missing_percent < 5 and duplicatas < 10 else "⚠️ Atenção" if missing_percent < 15 else "❌ Crítica"
+                })
+        
+        if qualidade_info:
+            df_qualidade = pd.DataFrame(qualidade_info)
+            st.dataframe(df_qualidade, use_container_width=True)
+    
+    else:
+        st.warning("⚠️ Nenhum dado carregado para análise")
+    
+    # Footer técnico
+    st.markdown("---")
+    st.markdown("""
+    ### 🎯 **Conclusão Técnica**
+    
+    Este sistema representa uma implementação completa de análise epidemiológica moderna, integrando:
+    - **Automação de dados** com tecnologias Python
+    - **Análises estatísticas robustas** com múltiplas metodologias
+    - **Visualização interativa** para exploração de dados
+    - **Interface intuitiva** para diferentes perfis de usuários
+    - **Validação rigorosa** para garantir qualidade científica
+    
+    **Tecnologias Principais:** Python, Pandas, NumPy, SciPy, Scikit-learn, Plotly, Streamlit, Statsmodels
+    
+    **Padrões Seguidos:** PEP 8, Documentação docstring, Type hints, Git workflow, Code review
+    """)
+
+
 def main():
     """Função principal do dashboard"""
     st.title("🦠 **Dashboard Completo de Meningite Brasil**")
@@ -3183,7 +4458,8 @@ def main():
                 "🦠 Análise Epidemiológica",
                 "⚡ Taxa de Ataque",
                 "🔍 Exploração Livre",
-                "📋 Relatórios"
+                "📋 Relatórios",
+                "⚙️ Expositivo Técnico"
             ]
         )
         
@@ -3210,6 +4486,8 @@ def main():
             show_free_exploration(dados)
         elif opcao == "📋 Relatórios":
             show_reports(dados)
+        elif opcao == "⚙️ Expositivo Técnico":
+            show_technical_exposition(dados)
         
         # Informações adicionais na sidebar
         st.sidebar.markdown("---")
