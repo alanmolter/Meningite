@@ -1198,8 +1198,93 @@ def show_technical_exposition(dados):
         ```
         """)
     
-    # Seção 7: Validação e Qualidade
-    st.header("✅ **7. Validação e Controle de Qualidade**")
+    # Seção 7: Modelagem Epidemiológica
+    st.header("🧮 **7. Modelagem Epidemiológica Avançada**")
+    
+    st.markdown("""
+    ### 🦠 **Modelo SIR Implementado**
+    
+    O sistema inclui uma implementação completa do **modelo SIR** (Susceptible-Infected-Recovered), 
+    um dos modelos matemáticos mais fundamentais em epidemiologia.
+    
+    #### 🔬 **Características da Implementação:**
+    
+    **📊 Funcionalidades Principais:**
+    - ✅ **Ajuste automático** de parâmetros aos dados reais
+    - ✅ **Estimação de R₀** (número básico de reprodução)
+    - ✅ **Visualizações interativas** com múltiplas perspectivas
+    - ✅ **Análise de sensibilidade** dos parâmetros
+    - ✅ **Interpretação didática** dos resultados
+    
+    **⚙️ Métodos Matemáticos:**
+    - **Resolução numérica**: Método odeint (scipy.integrate)
+    - **Otimização**: Minimização de erro quadrático médio
+    - **Algoritmo**: Nelder-Mead para ajuste de parâmetros
+    - **Validação**: Comparação com dados históricos
+    
+    **📈 Equações Diferenciais:**
+    ```
+    dS/dt = -β × S × I / N
+    dI/dt = β × S × I / N - γ × I  
+    dR/dt = γ × I
+    ```
+    
+    **🎯 Parâmetros Estimados:**
+    - **β (beta)**: Taxa de transmissão
+    - **γ (gamma)**: Taxa de recuperação
+    - **R₀ = β/γ**: Número básico de reprodução
+    
+    #### 📊 **Visualizações Geradas:**
+    
+    1. **Comparação Dados Reais vs Modelo**: Validação do ajuste
+    2. **Evolução S-I-R**: Dinâmica dos compartimentos
+    3. **Taxa de Infecção**: Velocidade de propagação
+    4. **Fase Portrait**: Relação dinâmica S vs I
+    5. **Análise de Sensibilidade**: Impacto de variações nos parâmetros
+    
+    #### 🎓 **Interpretação Epidemiológica:**
+    
+    **R₀ (Número Básico de Reprodução):**
+    - **R₀ < 1**: Epidemia em declínio
+    - **R₀ = 1**: Epidemia estável  
+    - **R₀ > 1**: Epidemia em crescimento
+    
+    **Período Infeccioso**: 1/γ (tempo médio de infecção)
+    
+    **Taxa de Transmissão**: β (probabilidade de transmissão por contato)
+    
+    #### 🔍 **Limitações Reconhecidas:**
+    
+    - **População homogênea**: Assume mistura aleatória
+    - **Parâmetros constantes**: β e γ fixos no tempo
+    - **Sem reinfecção**: Imunidade permanente assumida
+    - **Dados agregados**: Resolução temporal limitada
+    
+    #### 💡 **Aplicações Práticas:**
+    
+    - **Previsão de surtos**: Estimativa de picos epidêmicos
+    - **Avaliação de intervenções**: Impacto de medidas de controle
+    - **Planejamento de recursos**: Dimensionamento de leitos/vacinas
+    - **Comunicação de risco**: Visualização didática para gestores
+    
+    #### 📚 **Bibliotecas Utilizadas:**
+    
+    **Modelagem Epidemiológica:**
+    - `epimodels`: Modelos epidemiológicos clássicos
+    - `epydemiology`: Análises epidemiológicas avançadas
+    - `lmfit`: Ajuste de modelos não-lineares
+    - `pymc`: Modelagem probabilística bayesiana
+    - `arviz`: Análise e visualização de modelos bayesianos
+    
+    **Computação Científica:**
+    - `scipy.integrate.odeint`: Resolução de EDOs
+    - `scipy.optimize.minimize`: Otimização de parâmetros
+    - `numpy`: Operações numéricas eficientes
+    - `pandas`: Manipulação de dados temporais
+    """)
+    
+    # Seção 8: Validação e Qualidade
+    st.header("✅ **8. Validação e Controle de Qualidade**")
     
     st.markdown("""
     #### 🔍 **Processos de Validação Implementados:**
@@ -1229,8 +1314,8 @@ def show_technical_exposition(dados):
     - Backup automatizado
     """)
     
-    # Seção 8: Considerações Técnicas
-    st.header("⚠️ **8. Limitações e Considerações Técnicas**")
+    # Seção 9: Considerações Técnicas
+    st.header("⚠️ **9. Limitações e Considerações Técnicas**")
     
     st.markdown("""
     #### 🚧 **Limitações Conhecidas:**

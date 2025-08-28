@@ -14,6 +14,7 @@ from app_sections.attack_rate import show_attack_rate_analysis
 from app_sections.explore import show_free_exploration
 from app_sections.reports import show_reports
 from app_sections.technical import show_technical_exposition
+from app_sections.sir_modeling import show_sir_modeling
 
 from dashboard_completo_v2 import load_all_data
 
@@ -36,6 +37,7 @@ def main() -> None:
             "🔬 Análises Avançadas",
             "🦠 Análise Epidemiológica",
             "⚡ Taxa de Ataque",
+            "🧮 Modelagem SIR",
             "🔍 Exploração Livre",
             "📋 Relatórios",
             "⚙️ Expositivo Técnico",
@@ -60,6 +62,8 @@ def main() -> None:
         show_epidemiological_analysis(dados)
     elif opcao == "⚡ Taxa de Ataque":
         show_attack_rate_analysis(dados)
+    elif opcao == "🧮 Modelagem SIR":
+        show_sir_modeling(dados)
     elif opcao == "🔍 Exploração Livre":
         show_free_exploration(dados)
     elif opcao == "📋 Relatórios":
