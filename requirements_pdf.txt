@@ -1,0 +1,3 @@
+# Bibliotecas necessárias para converter Markdown para PDF
+markdown>=3.4.0
+weasyprint>=60.0

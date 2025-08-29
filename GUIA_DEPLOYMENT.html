@@ -1,0 +1,1280 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Guia de Deployment - IMUNOPREVINIVEIS</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                margin: 2cm;
+                color: #333;
+                max-width: 1200px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                color: #2c3e50;
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+            }
+            
+            h1 {
+                font-size: 2.5em;
+                border-bottom: 3px solid #3498db;
+                padding-bottom: 0.3em;
+                text-align: center;
+            }
+            
+            h2 {
+                font-size: 2em;
+                border-bottom: 2px solid #ecf0f1;
+                padding-bottom: 0.2em;
+                color: #34495e;
+            }
+            
+            h3 {
+                font-size: 1.5em;
+                color: #34495e;
+            }
+            
+            code {
+                background-color: #f8f9fa;
+                padding: 0.2em 0.4em;
+                border-radius: 3px;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9em;
+                border: 1px solid #e9ecef;
+            }
+            
+            pre {
+                background-color: #f8f9fa;
+                padding: 1em;
+                border-radius: 5px;
+                border-left: 4px solid #3498db;
+                overflow-x: auto;
+                border: 1px solid #e9ecef;
+            }
+            
+            pre code {
+                background-color: transparent;
+                padding: 0;
+                border: none;
+            }
+            
+            blockquote {
+                border-left: 4px solid #3498db;
+                margin: 1em 0;
+                padding-left: 1em;
+                color: #7f8c8d;
+                background-color: #f8f9fa;
+                padding: 1em;
+                border-radius: 5px;
+            }
+            
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 1em 0;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            th, td {
+                border: 1px solid #ddd;
+                padding: 0.8em;
+                text-align: left;
+            }
+            
+            th {
+                background-color: #3498db;
+                color: white;
+                font-weight: bold;
+            }
+            
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+            
+            .toc {
+                background-color: #f8f9fa;
+                padding: 1em;
+                border-radius: 5px;
+                margin: 1em 0;
+                border: 1px solid #e9ecef;
+            }
+            
+            .toc ul {
+                list-style-type: none;
+                padding-left: 1em;
+            }
+            
+            .toc a {
+                text-decoration: none;
+                color: #3498db;
+            }
+            
+            .toc a:hover {
+                text-decoration: underline;
+            }
+            
+            hr {
+                border: none;
+                border-top: 2px solid #ecf0f1;
+                margin: 2em 0;
+            }
+            
+            ul, ol {
+                padding-left: 2em;
+            }
+            
+            li {
+                margin: 0.5em 0;
+            }
+            
+            a {
+                color: #3498db;
+                text-decoration: none;
+            }
+            
+            a:hover {
+                text-decoration: underline;
+            }
+            
+            .emoji {
+                font-size: 1.2em;
+            }
+            
+            @media print {
+                body {
+                    margin: 1cm;
+                }
+                
+                h1, h2, h3, h4, h5, h6 {
+                    page-break-after: avoid;
+                }
+                
+                pre, blockquote {
+                    page-break-inside: avoid;
+                }
+                
+                table {
+                    page-break-inside: avoid;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="guia-completo-de-deployment-dashboard-imunopreviniveis-brasil">Guia Completo de Deployment - Dashboard IMUNOPREVINIVEIS Brasil</h1>
+
+<h2 id="indice">📋 Índice</h2>
+
+<ol>
+<li><a href="#como-a-aplicação-funciona-localmente">Como a Aplicação Funciona Localmente</a></li>
+<li><a href="#arquitetura-do-projeto">Arquitetura do Projeto</a></li>
+<li><a href="#deployment-em-servidor-institucional">Deployment em Servidor Institucional</a></li>
+<li><a href="#requisitos-de-sistema">Requisitos de Sistema</a></li>
+<li><a href="#configuração-de-segurança">Configuração de Segurança</a></li>
+<li><a href="#manutenção-e-atualizações">Manutenção e Atualizações</a></li>
+</ol>
+
+<p>---Todas as tecnologias e implementações nescessarias para o deploy da aplicação no SERVIDOR se encontram na seção REQUISITOS DO SISTEMA.</p>
+
+<h2 id="como-a-aplicacao-funciona-localmente">🏠 Como a Aplicação Funciona Localmente</h2>
+
+<h3 id="o-que-e-o-streamlit">O que é o Streamlit?</h3>
+
+<p>O <strong>Streamlit</strong> é uma biblioteca Python que permite criar aplicações web interativas diretamente a partir de código Python. Ele é especialmente útil para dashboards de dados, visualizações científicas e aplicações de análise.</p>
+
+<h3 id="como-funciona-o-desenvolvimento-local">Como Funciona o Desenvolvimento Local?</h3>
+
+<h4 id="1-ambiente-virtual-python">1. <strong>Ambiente Virtual Python</strong></h4>
+
+<ul>
+<li>Um <strong>ambiente virtual</strong> é como uma "caixa isolada" onde instalamos apenas as bibliotecas necessárias para este projeto</li>
+<li>Evita conflitos com outras versões de Python ou bibliotecas do sistema</li>
+<li>No projeto: pasta <code>.venv/</code> contém este ambiente isolado</li>
+</ul>
+
+<h4 id="2-execucao-da-aplicacao">2. <strong>Execução da Aplicação</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Ativar o ambiente virtual</span>
+.venv<span class="se">\S</span>cripts<span class="se">\A</span>ctivate.ps1<span class="w">  </span><span class="c1"># Windows PowerShell</span>
+<span class="c1"># ou</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">    </span><span class="c1"># Linux/Mac</span>
+
+<span class="c1"># Verificar versão do Python</span>
+python<span class="w"> </span>--version<span class="w">  </span><span class="c1"># Deve mostrar Python 3.13.7 ou superior</span>
+
+<span class="c1"># Executar a aplicação</span>
+streamlit<span class="w"> </span>run<span class="w"> </span>app/main.py
+</code></pre>
+</div>
+
+<h4 id="3-o-que-acontece-quando-executamos">3. <strong>O que Acontece Quando Executamos?</strong></h4>
+
+<ol>
+<li><strong>Streamlit inicia um servidor web local</strong> na sua máquina</li>
+<li><strong>Compila o código Python</strong> em uma interface web</li>
+<li><strong>Abre automaticamente o navegador</strong> no endereço <code>http://localhost:8501</code></li>
+<li><strong>Mantém o servidor rodando</strong> enquanto você desenvolve</li>
+</ol>
+
+<h4 id="4-o-que-e-localhost-e-por-que-nao-e-acessivel-pela-internet">4. <strong>O que é Localhost e Por que Não é Acessível pela Internet?</strong></h4>
+
+<h5 id="o-que-e-localhost"><strong>O que é Localhost?</strong></h5>
+
+<ul>
+<li><strong>Localhost</strong> = "esta máquina" (127.0.0.1)</li>
+<li><strong>Porta 8501</strong> = "canal de comunicação" específico</li>
+<li><strong>http://localhost:8501</strong> = endereço para acessar a aplicação rodando na SUA máquina</li>
+</ul>
+
+<h5 id="por-que-localhost-nao-e-acessivel-pela-internet"><strong>Por que Localhost Não é Acessível pela Internet?</strong></h5>
+
+<pre><code>Internet → Roteador → Sua Máquina (localhost:8501)
+    ❌     ❌         ✅ (apenas você)
+</code></pre>
+
+<p><strong>1. Endereço IP Privado:</strong>
+- <strong>127.0.0.1</strong> é um endereço IP <strong>reservado</strong> e <strong>privado</strong>
+- Significa literalmente "esta máquina aqui"
+- Não é roteável pela internet</p>
+
+<p><strong>2. Roteamento de Rede:</strong>
+- <strong>Internet pública</strong> não sabe onde está o endereço 127.0.0.1
+- Cada pessoa tem seu próprio 127.0.0.1 (sua própria máquina)
+- É como um "endereço interno" que só funciona na sua casa</p>
+
+<p><strong>3. Firewall e Segurança:</strong>
+- <strong>Roteadores domésticos</strong> bloqueiam conexões externas por padrão
+- <strong>ISP (provedor de internet)</strong> não encaminha tráfego para 127.0.0.1
+- <strong>Sua máquina</strong> não está configurada para aceitar conexões externas</p>
+
+<p><strong>4. Analogia Simples:</strong>
+- <strong>Localhost</strong> = endereço da sua casa (só você sabe onde fica)
+- <strong>Internet</strong> = cidade grande (não sabe onde fica sua casa)
+- <strong>Servidor</strong> = endereço público com placa na rua (todos podem encontrar)</p>
+
+<h4 id="5-fluxo-de-funcionamento-local">5. <strong>Fluxo de Funcionamento Local</strong></h4>
+
+<pre><code>Seu Código Python → Streamlit → Servidor Local → Navegador
+     ↓
+app/main.py → Interface Web → http://localhost:8501 → Dashboard
+</code></pre>
+
+<hr />
+
+<h2 id="arquitetura-do-projeto">🏗️ Arquitetura do Projeto</h2>
+
+<h3 id="estrutura-de-pastas">Estrutura de Pastas</h3>
+
+<pre><code>imunopreviniveis/
+├── app/                          # Aplicação principal
+│   ├── __init__.py              # Torna a pasta um pacote Python
+│   └── main.py                  # Arquivo principal da aplicação
+├── app_sections/                 # Módulos organizados por funcionalidade
+│   ├── __init__.py              # Pacote de seções
+│   ├── overview.py              # Visão geral dos dados
+│   ├── cases.py                 # Análise de casos
+│   ├── sorogrupos.py            # Análise de sorogrupos
+│   ├── etiologia.py             # Análise de etiologia
+│   ├── imunizacao.py            # Análise de imunização
+│   ├── regional.py              # Análise regional
+│   ├── advanced.py              # Análises avançadas
+│   ├── epidemiologica.py        # Análise epidemiológica
+│   ├── attack_rate.py           # Taxa de ataque
+│   ├── sir_modeling.py          # Modelagem SIR
+│   ├── explore.py               # Exploração livre dos dados
+│   ├── reports.py               # Geração de relatórios
+│   └── technical.py             # Documentação técnica
+├── data/                        # Dados processados
+│   └── processed/               # Arquivos CSV processados
+├── TABELAS/                     # Dados brutos e consolidados
+├── dashboard_completo_v2.py     # Lógica principal e funções
+├── requirements.txt             # Dependências Python
+└── .venv/                       # Ambiente virtual
+</code></pre>
+
+<h3 id="como-a-arquitetura-funciona">Como a Arquitetura Funciona</h3>
+
+<h4 id="1-padrao-modular">1. <strong>Padrão Modular</strong></h4>
+
+<ul>
+<li><strong><code>main.py</code></strong>: Orquestrador principal - define a interface e navegação</li>
+<li><strong><code>app_sections/</code></strong>: Cada arquivo representa uma funcionalidade específica</li>
+<li><strong><code>dashboard_completo_v2.py</code></strong>: Motor de dados - carrega e processa informações</li>
+</ul>
+
+<h4 id="2-fluxo-de-dados">2. <strong>Fluxo de Dados</strong></h4>
+
+<pre><code>Dados CSV → dashboard_completo_v2.py → app_sections/ → main.py → Interface Web
+</code></pre>
+
+<h4 id="3-separacao-de-responsabilidades">3. <strong>Separação de Responsabilidades</strong></h4>
+
+<ul>
+<li><strong>Dados</strong>: Pastas <code>data/</code> e <code>TABELAS/</code></li>
+<li><strong>Lógica</strong>: <code>dashboard_completo_v2.py</code></li>
+<li><strong>Interface</strong>: <code>app_sections/</code> + <code>main.py</code></li>
+<li><strong>Configuração</strong>: <code>requirements.txt</code> + <code>.venv/</code></li>
+</ul>
+
+<h4 id="4-sistema-de-navegacao">4. <strong>Sistema de Navegação</strong></h4>
+
+<ul>
+<li><strong>Sidebar</strong>: Menu lateral com todas as seções disponíveis</li>
+<li><strong>Tabs</strong>: Cada seção é carregada dinamicamente</li>
+<li><strong>Estado</strong>: Streamlit mantém o estado entre navegações</li>
+</ul>
+
+<hr />
+
+<h2 id="deployment-em-servidor-institucional">🌐 Deployment em Servidor Institucional</h2>
+
+<h3 id="o-que-e-deployment">O que é Deployment?</h3>
+
+<p><strong>Deployment</strong> é o processo de colocar uma aplicação rodando localmente em um servidor para que outras pessoas possam acessá-la pela internet.</p>
+
+<h3 id="por-que-precisamos-de-um-servidor">Por que Precisamos de um Servidor?</h3>
+
+<h4 id="problemas-do-desenvolvimento-local"><strong>Problemas do Desenvolvimento Local:</strong></h4>
+
+<ul>
+<li>❌ <strong>Apenas você pode acessar</strong> (localhost)</li>
+<li>❌ <strong>Aplicação para quando você desliga o computador</strong></li>
+<li>❌ <strong>Recursos limitados</strong> da sua máquina</li>
+<li>❌ <strong>Sem controle de acesso</strong> ou segurança</li>
+</ul>
+
+<h4 id="solucoes-do-servidor"><strong>Soluções do Servidor:</strong></h4>
+
+<ul>
+<li>✅ <strong>Acesso público</strong>: Qualquer pessoa pode acessar via internet</li>
+<li>✅ <strong>Disponibilidade 24/7</strong>: Aplicação sempre disponível</li>
+<li>✅ <strong>Recursos compartilhados</strong>: Múltiplos usuários simultâneos</li>
+<li>✅ <strong>Segurança institucional</strong>: Controle de acesso e backup</li>
+</ul>
+
+<h4 id="como-o-servidor-resolve-o-problema-do-localhost"><strong>Como o Servidor Resolve o Problema do Localhost:</strong></h4>
+
+<p><strong>1. Endereço IP Público:</strong></p>
+
+<pre><code>Internet → Servidor (IP Público: 200.150.100.50) → Aplicação (Porta 8501)
+    ✅         ✅                                    ✅
+</code></pre>
+
+<ul>
+<li><strong>Servidor</strong> tem um <strong>IP público</strong> visível na internet</li>
+<li><strong>DNS</strong> converte <code>imunopreviniveis.fiocruz.br</code> → <code>200.150.100.50</code></li>
+<li><strong>Qualquer pessoa</strong> pode encontrar o endereço</li>
+</ul>
+
+<p><strong>2. Roteamento de Rede:</strong>
+- <strong>Internet pública</strong> sabe onde está o servidor
+- <strong>Roteadores</strong> encaminham tráfego para o IP correto
+- <strong>Firewall</strong> permite conexões na porta 80/443 (HTTP/HTTPS)</p>
+
+<p><strong>3. Configuração de Rede:</strong>
+- <strong>Servidor</strong> está configurado para aceitar conexões externas
+- <strong>Nginx</strong> recebe requisições e encaminha para Streamlit
+- <strong>Port forwarding</strong> direciona tráfego para a aplicação</p>
+
+<p><strong>4. Analogia com Servidor:</strong>
+- <strong>Servidor</strong> = loja na rua principal com placa visível
+- <strong>IP público</strong> = endereço da loja (Rua das Flores, 123)
+- <strong>DNS</strong> = placa da loja ("IMUNOPREVINIVEIS")
+- <strong>Internet</strong> = todos os clientes podem encontrar a loja</p>
+
+<h3 id="cenario-fiocruz-rio-de-janeiro">Cenário: Fiocruz Rio de Janeiro</h3>
+
+<h4 id="1-infraestrutura-necessaria">1. <strong>Infraestrutura Necessária</strong></h4>
+
+<pre><code>Internet → Firewall → Load Balancer → Servidor Web → Aplicação Streamlit
+</code></pre>
+
+<h4 id="2-componentes-do-sistema">2. <strong>Componentes do Sistema</strong></h4>
+
+<ul>
+<li><strong>Servidor Web</strong>: Máquina física ou virtual rodando Linux</li>
+<li><strong>Proxy Reverso</strong>: Nginx ou Apache (gerencia requisições)</li>
+<li><strong>Process Manager</strong>: Supervisor ou systemd (mantém aplicação rodando)</li>
+<li><strong>Banco de Dados</strong>: PostgreSQL ou MySQL (se necessário)</li>
+<li><strong>Monitoramento</strong>: Logs, métricas de performance</li>
+</ul>
+
+<hr />
+
+<h2 id="requisitos-de-sistema">💻 Requisitos de Sistema</h2>
+
+<h3 id="versoes-do-python-e-compatibilidade">Versões do Python e Compatibilidade</h3>
+
+<h4 id="python-312-recomendado"><strong>Python 3.12+ (Recomendado)</strong></h4>
+
+<ul>
+<li><strong>Versão atual do projeto</strong>: Python 3.13.7</li>
+<li><strong>Versão mínima suportada</strong>: Python 3.10</li>
+<li><strong>Versão recomendada para produção</strong>: Python 3.12 LTS</li>
+<li><strong>Por que Python 3.12+?</strong>
+<ul>
+<li>Suporte estendido até 2028</li>
+<li>Melhor performance e otimizações</li>
+<li>Compatibilidade com bibliotecas modernas</li>
+<li>Correções de segurança</li>
+</ul></li>
+</ul>
+
+<h4 id="compatibilidade-de-bibliotecas"><strong>Compatibilidade de Bibliotecas</strong></h4>
+
+<ul>
+<li><strong>Streamlit</strong>: 1.28.0+ (requer Python 3.8+)</li>
+<li><strong>Pandas</strong>: 2.0.0+ (requer Python 3.9+)</li>
+<li><strong>NumPy</strong>: 1.24.0+ (requer Python 3.9+)</li>
+<li><strong>Plotly</strong>: 5.15.0+ (requer Python 3.8+)</li>
+</ul>
+
+<h3 id="servidor-de-producao">Servidor de Produção</h3>
+
+<h4 id="especificacoes-minimas"><strong>Especificações Mínimas</strong></h4>
+
+<ul>
+<li><strong>CPU</strong>: 4 cores (Intel i5 ou AMD Ryzen 5)</li>
+<li><strong>RAM</strong>: 8GB DDR4</li>
+<li><strong>Armazenamento</strong>: 100GB SSD</li>
+<li><strong>Sistema Operacional</strong>: Ubuntu 22.04 LTS ou Rocky Linux 9</li>
+</ul>
+
+<h4 id="especificacoes-recomendadas"><strong>Especificações Recomendadas</strong></h4>
+
+<ul>
+<li><strong>CPU</strong>: 8 cores (Intel i7 ou AMD Ryzen 7)</li>
+<li><strong>RAM</strong>: 16GB DDR5</li>
+<li><strong>Armazenamento</strong>: 500GB SSD NVMe</li>
+<li><strong>Sistema Operacional</strong>: Ubuntu 24.04 LTS ou Rocky Linux 9</li>
+</ul>
+
+<h4 id="software-necessario"><strong>Software Necessário</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Sistema base</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3.12<span class="w"> </span>python3.12-venv<span class="w"> </span>python3-pip
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>supervisor
+
+<span class="c1"># Python e dependências</span>
+python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/opt/meningite/venv
+<span class="nb">source</span><span class="w"> </span>/opt/meningite/venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre>
+</div>
+
+<h3 id="rede-e-conectividade">Rede e Conectividade</h3>
+
+<h4 id="configuracao-de-rede"><strong>Configuração de Rede</strong></h4>
+
+<ul>
+<li><strong>IP Público</strong>: Endereço visível na internet</li>
+<li><strong>Porta 80/443</strong>: HTTP/HTTPS padrão</li>
+<li><strong>Firewall</strong>: Regras para permitir tráfego web</li>
+<li><strong>DNS</strong>: Nome de domínio (ex: meningite.fiocruz.br)</li>
+</ul>
+
+<h4 id="seguranca-de-rede"><strong>Segurança de Rede</strong></h4>
+
+<ul>
+<li><strong>SSL/TLS</strong>: Certificado para HTTPS</li>
+<li><strong>Rate Limiting</strong>: Proteção contra ataques</li>
+<li><strong>IP Whitelist</strong>: Restrição de acesso se necessário</li>
+</ul>
+
+<hr />
+
+<h2 id="configuracao-de-seguranca">🔒 Configuração de Segurança</h2>
+
+<h3 id="1-usuarios-e-permissoes">1. <strong>Usuários e Permissões</strong></h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Criar usuário específico para a aplicação</span>
+sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-s<span class="w"> </span>/bin/bash<span class="w"> </span>imunopreviniveis
+sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>www-data<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Definir permissões</span>
+sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span>imunopreviniveis:www-data<span class="w"> </span>/opt/imunopreviniveis/
+sudo<span class="w"> </span>chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">755</span><span class="w"> </span>/opt/imunopreviniveis/
+</code></pre>
+</div>
+
+<h3 id="2-configuracao-do-nginx">2. <strong>Configuração do Nginx</strong></h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># /etc/nginx/sites-available/imunopreviniveis</span>
+<span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">imunopreviniveis.fiocruz.br</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://127.0.0.1:8501</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_http_version</span><span class="w"> </span><span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Upgrade</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Connection</span><span class="w"> </span><span class="s">&#39;upgrade&#39;</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">proxy_cache_bypass</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="3-configuracao-do-supervisor">3. <strong>Configuração do Supervisor</strong></h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># /etc/supervisor/conf.d/imunopreviniveis.conf</span>
+<span class="k">[program:imunopreviniveis]</span>
+<span class="na">command</span><span class="o">=</span><span class="s">/opt/imunopreviniveis/venv/bin/streamlit run /opt/imunopreviniveis/app/main.py --server.port 8501 --server.address 127.0.0.1</span>
+<span class="na">directory</span><span class="o">=</span><span class="s">/opt/imunopreviniveis</span>
+<span class="na">user</span><span class="o">=</span><span class="s">imunopreviniveis</span>
+<span class="na">autostart</span><span class="o">=</span><span class="s">true</span>
+<span class="na">autorestart</span><span class="o">=</span><span class="s">true</span>
+<span class="na">stderr_logfile</span><span class="o">=</span><span class="s">/var/log/imunopreviniveis/err.log</span>
+<span class="na">stdout_logfile</span><span class="o">=</span><span class="s">/var/log/imunopreviniveis/out.log</span>
+</code></pre>
+</div>
+
+<h3 id="4-firewall-e-seguranca">4. <strong>Firewall e Segurança</strong></h3>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Configurar UFW (Uncomplicated Firewall)</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">22</span>/tcp<span class="w">    </span><span class="c1"># SSH</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">80</span>/tcp<span class="w">    </span><span class="c1"># HTTP</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">443</span>/tcp<span class="w">   </span><span class="c1"># HTTPS</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span><span class="nb">enable</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2 id="processo-de-deployment">🚀 Processo de Deployment</h2>
+
+<h3 id="passo-a-passo-completo">Passo a Passo Completo</h3>
+
+<h4 id="1-preparacao-do-servidor"><strong>1. Preparação do Servidor</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Conectar via SSH</span>
+ssh<span class="w"> </span>usuario@servidor.fiocruz.br
+
+<span class="c1"># Atualizar sistema</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+
+<span class="c1"># Instalar dependências</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3.9<span class="w"> </span>python3.9-venv<span class="w"> </span>python3-pip<span class="w"> </span>nginx<span class="w"> </span>supervisor
+</code></pre>
+</div>
+
+<h4 id="2-configuracao-do-ambiente-python"><strong>2. Configuração do Ambiente Python</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Criar diretório da aplicação</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/imunopreviniveis
+sudo<span class="w"> </span>chown<span class="w"> </span><span class="nv">$USER</span>:<span class="nv">$USER</span><span class="w"> </span>/opt/imunopreviniveis
+
+<span class="c1"># Copiar código do projeto</span>
+scp<span class="w"> </span>-r<span class="w"> </span>./*<span class="w"> </span>usuario@servidor:/opt/imunopreviniveis/
+
+<span class="c1"># Criar ambiente virtual</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre>
+</div>
+
+<h4 id="3-configuracao-dos-servicos"><strong>3. Configuração dos Serviços</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Configurar Nginx</span>
+sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/imunopreviniveis<span class="w"> </span>/etc/nginx/sites-enabled/
+sudo<span class="w"> </span>nginx<span class="w"> </span>-t
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx
+
+<span class="c1"># Configurar Supervisor</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>reread
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>update
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>imunopreviniveis
+</code></pre>
+</div>
+
+<h4 id="4-teste-e-validacao"><strong>4. Teste e Validação</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Verificar status dos serviços</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>nginx
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Verificar logs</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/imunopreviniveis/out.log
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log
+
+<span class="c1"># Verificar versão do Python</span>
+python3<span class="w"> </span>--version
+pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(streamlit|pandas|numpy|plotly)&quot;</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2 id="manutencao-e-atualizacoes">🛠️ Manutenção e Atualizações</h2>
+
+<h3 id="acesso-remoto-ao-servidor-de-casa">🔑 Acesso Remoto ao Servidor (De Casa)</h3>
+
+<h4 id="1-configuracao-inicial-de-acesso-ssh"><strong>1. Configuração Inicial de Acesso SSH</strong></h4>
+
+<h5 id="passo-1-gerar-chave-ssh-na-sua-maquina"><strong>Passo 1: Gerar Chave SSH na Sua Máquina</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># No seu computador de casa (Windows PowerShell ou Linux/Mac)</span>
+ssh-keygen<span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span><span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;seu.email@fiocruz.br&quot;</span>
+
+<span class="c1"># A chave será salva em:</span>
+<span class="c1"># Windows: C:\Users\seu_usuario\.ssh\id_rsa</span>
+<span class="c1"># Linux/Mac: ~/.ssh/id_rsa</span>
+</code></pre>
+</div>
+
+<h5 id="passo-2-adicionar-chave-ao-servidor"><strong>Passo 2: Adicionar Chave ao Servidor</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Copiar sua chave pública para o servidor</span>
+ssh-copy-id<span class="w"> </span>seu_usuario@servidor.fiocruz.br
+
+<span class="c1"># Ou manualmente:</span>
+<span class="c1"># 1. Copiar conteúdo de ~/.ssh/id_rsa.pub</span>
+<span class="c1"># 2. Adicionar ao arquivo ~/.ssh/authorized_keys no servidor</span>
+</code></pre>
+</div>
+
+<h5 id="passo-3-testar-conexao"><strong>Passo 3: Testar Conexão</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Conectar ao servidor</span>
+ssh<span class="w"> </span>seu_usuario@servidor.fiocruz.br
+
+<span class="c1"># Se funcionar, você verá o prompt do servidor:</span>
+<span class="c1"># seu_usuario@servidor:~$</span>
+</code></pre>
+</div>
+
+<h4 id="2-acesso-diario-ao-projeto"><strong>2. Acesso Diário ao Projeto</strong></h4>
+
+<h5 id="conectar-ao-servidor"><strong>Conectar ao Servidor</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># De casa, conecte via SSH</span>
+ssh<span class="w"> </span>seu_usuario@servidor.fiocruz.br
+
+<span class="c1"># Navegar para o projeto</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+
+<span class="c1"># Ver estrutura do projeto</span>
+ls<span class="w"> </span>-la
+</code></pre>
+</div>
+
+<h5 id="verificar-status-da-aplicacao"><strong>Verificar Status da Aplicação</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Ver se está rodando</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Ver logs em tempo real</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/imunopreviniveis/out.log
+
+<span class="c1"># Ver uso de recursos</span>
+htop
+</code></pre>
+</div>
+
+<h4 id="3-trabalhando-com-o-codigo"><strong>3. Trabalhando com o Código</strong></h4>
+
+<h5 id="editar-arquivos-diretamente-no-servidor"><strong>Editar Arquivos Diretamente no Servidor</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Usar editor de texto (nano, vim, ou instalar code)</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nano<span class="w"> </span>vim
+
+<span class="c1"># Editar arquivo principal</span>
+nano<span class="w"> </span>app/main.py
+
+<span class="c1"># Ou instalar Visual Studio Code no servidor</span>
+sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>code<span class="w"> </span>--classic
+code<span class="w"> </span>app/main.py
+</code></pre>
+</div>
+
+<h5 id="sincronizar-codigo-com-seu-computador"><strong>Sincronizar Código com Seu Computador</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Opção 1: Usar rsync para sincronizar</span>
+rsync<span class="w"> </span>-avz<span class="w"> </span>--delete<span class="w"> </span>seu_usuario@servidor.fiocruz.br:/opt/imunopreviniveis/<span class="w"> </span>./imunopreviniveis_local/
+
+<span class="c1"># Opção 2: Usar Git (recomendado)</span>
+<span class="c1"># No servidor:</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+git<span class="w"> </span>init
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Versão inicial&quot;</span>
+
+<span class="c1"># No seu computador:</span>
+git<span class="w"> </span>clone<span class="w"> </span>ssh://seu_usuario@servidor.fiocruz.br/opt/imunopreviniveis
+</code></pre>
+</div>
+
+<h4 id="4-fluxo-de-desenvolvimento-remoto"><strong>4. Fluxo de Desenvolvimento Remoto</strong></h4>
+
+<h5 id="ciclo-de-desenvolvimento"><strong>Ciclo de Desenvolvimento</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># 1. Conectar ao servidor</span>
+ssh<span class="w"> </span>seu_usuario@servidor.fiocruz.br
+
+<span class="c1"># 2. Fazer alterações no código</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+nano<span class="w"> </span>app/main.py
+
+<span class="c1"># 3. Testar alterações</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># 4. Verificar se funcionou</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># 5. Ver logs para debug</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/imunopreviniveis/out.log
+</code></pre>
+</div>
+
+<h5 id="sincronizacao-bidirecional"><strong>Sincronização Bidirecional</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Do servidor para seu computador</span>
+scp<span class="w"> </span>-r<span class="w"> </span>seu_usuario@servidor.fiocruz.br:/opt/imunopreviniveis/app/<span class="w"> </span>./app_servidor/
+
+<span class="c1"># Do seu computador para o servidor</span>
+scp<span class="w"> </span>-r<span class="w"> </span>./app/<span class="w"> </span>seu_usuario@servidor.fiocruz.br:/opt/imunopreviniveis/
+</code></pre>
+</div>
+
+<h4 id="2-scripts-de-deploy-automatizado"><strong>2. Scripts de Deploy Automatizado</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1"># deploy.sh</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>imunopreviniveis
+</code></pre>
+</div>
+
+<h4 id="3-adicionando-novas-funcionalidades"><strong>3. Adicionando Novas Funcionalidades</strong></h4>
+
+<h5 id="passo-1-criar-nova-secao"><strong>Passo 1: Criar Nova Seção</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># No servidor, criar novo arquivo</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis/app_sections
+nano<span class="w"> </span>nova_analise.py
+
+<span class="c1"># Estrutura básica para nova seção:</span>
+import<span class="w"> </span>streamlit<span class="w"> </span>as<span class="w"> </span>st
+from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>Dict,<span class="w"> </span>Any
+
+def<span class="w"> </span>show_nova_analise<span class="o">(</span>dados:<span class="w"> </span>Dict<span class="o">[</span>str,<span class="w"> </span>Any<span class="o">])</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span>st.title<span class="o">(</span><span class="s2">&quot;🔬 Nova Análise&quot;</span><span class="o">)</span>
+<span class="w">    </span>st.write<span class="o">(</span><span class="s2">&quot;Descrição da nova funcionalidade&quot;</span><span class="o">)</span>
+
+<span class="w">    </span><span class="c1"># Sua lógica aqui</span>
+<span class="w">    </span>st.write<span class="o">(</span><span class="s2">&quot;Implementar análise específica...&quot;</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<h5 id="passo-2-integrar-ao-menu-principal"><strong>Passo 2: Integrar ao Menu Principal</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Editar main.py para incluir nova seção</span>
+nano<span class="w"> </span>app/main.py
+
+<span class="c1"># Adicionar import:</span>
+from<span class="w"> </span>app_sections.nova_analise<span class="w"> </span>import<span class="w"> </span>show_nova_analise
+
+<span class="c1"># Adicionar ao menu:</span>
+<span class="nv">opcao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>st.sidebar.selectbox<span class="o">(</span>
+<span class="w">    </span><span class="s2">&quot;Selecione a seção:&quot;</span>,
+<span class="w">    </span><span class="o">[</span>
+<span class="w">        </span><span class="s2">&quot;🏠 Visão Geral 2024&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;📊 Análise de Casos&quot;</span>,
+<span class="w">        </span><span class="c1"># ... outras opções ...</span>
+<span class="w">        </span><span class="s2">&quot;🔬 Nova Análise&quot;</span>,<span class="w">  </span><span class="c1"># NOVA OPÇÃO</span>
+<span class="w">    </span><span class="o">]</span>,
+<span class="o">)</span>
+
+<span class="c1"># Adicionar lógica de execução:</span>
+<span class="k">elif</span><span class="w"> </span><span class="nv">opcao</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;🔬 Nova Análise&quot;</span>:
+<span class="w">    </span>show_nova_analise<span class="o">(</span>dados<span class="o">)</span>
+</code></pre>
+</div>
+
+<h5 id="passo-3-testar-e-deploy"><strong>Passo 3: Testar e Deploy</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Reiniciar aplicação para testar</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Verificar se funcionou</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Ver logs para debug</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/imunopreviniveis/out.log
+</code></pre>
+</div>
+
+<h4 id="4-atualizando-dados"><strong>4. Atualizando Dados</strong></h4>
+
+<h5 id="adicionar-novos-arquivos-csv"><strong>Adicionar Novos Arquivos CSV</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Copiar novos dados para o servidor</span>
+scp<span class="w"> </span>novo_arquivo.csv<span class="w"> </span>seu_usuario@servidor.fiocruz.br:/opt/imunopreviniveis/TABELAS/
+
+<span class="c1"># Ou usar rsync para sincronizar pasta inteira</span>
+rsync<span class="w"> </span>-avz<span class="w"> </span>--delete<span class="w"> </span>./TABELAS/<span class="w"> </span>seu_usuario@servidor.fiocruz.br:/opt/imunopreviniveis/TABELAS/
+</code></pre>
+</div>
+
+<h5 id="atualizar-codigo-de-processamento"><strong>Atualizar Código de Processamento</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Editar dashboard_completo_v2.py para incluir novos dados</span>
+nano<span class="w"> </span>dashboard_completo_v2.py
+
+<span class="c1"># Adicionar função para carregar novos dados</span>
+def<span class="w"> </span>load_novos_dados<span class="o">()</span>:
+<span class="w">    </span><span class="c1"># Sua lógica aqui</span>
+<span class="w">    </span>pass
+
+<span class="c1"># Integrar na função load_all_data()</span>
+</code></pre>
+</div>
+
+<h3 id="monitoramento">Monitoramento</h3>
+
+<h4 id="1-logs-e-metricas"><strong>1. Logs e Métricas</strong></h4>
+
+<ul>
+<li><strong>Logs da aplicação</strong>: <code>/var/log/meningite/</code></li>
+<li><strong>Logs do Nginx</strong>: <code>/var/log/nginx/</code></li>
+<li><strong>Métricas do sistema</strong>: <code>htop</code>, <code>iotop</code>, <code>nethogs</code></li>
+</ul>
+
+<h4 id="2-backup-e-recuperacao"><strong>2. Backup e Recuperação</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Backup automático diário</span>
+<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>tar<span class="w"> </span>-czf<span class="w"> </span>/backup/imunopreviniveis-<span class="k">$(</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="k">)</span>.tar.gz<span class="w"> </span>/opt/imunopreviniveis/
+</code></pre>
+</div>
+
+<h4 id="3-atualizacoes-de-seguranca"><strong>3. Atualizações de Segurança</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Atualizações automáticas de segurança</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>unattended-upgrades
+sudo<span class="w"> </span>dpkg-reconfigure<span class="w"> </span>-plow<span class="w"> </span>unattended-upgrades
+</code></pre>
+</div>
+
+<h4 id="4-atualizacoes-do-python"><strong>4. Atualizações do Python</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Verificar versões disponíveis</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>list<span class="w"> </span>--upgradable<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>python3
+
+<span class="c1"># Atualizar Python (se necessário)</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3.12<span class="w"> </span>python3.12-venv
+
+<span class="c1"># Recriar ambiente virtual com nova versão</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+rm<span class="w"> </span>-rf<span class="w"> </span>venv
+python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre>
+</div>
+
+<h3 id="ferramentas-de-desenvolvimento-remoto">🛠️ Ferramentas de Desenvolvimento Remoto</h3>
+
+<h4 id="1-editores-de-codigo-no-servidor"><strong>1. Editores de Código no Servidor</strong></h4>
+
+<h5 id="visual-studio-code-recomendado"><strong>Visual Studio Code (Recomendado)</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Instalar VS Code no servidor</span>
+sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>code<span class="w"> </span>--classic
+
+<span class="c1"># Abrir projeto</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+code<span class="w"> </span>.
+
+<span class="c1"># Configurar extensões Python</span>
+<span class="c1"># - Python (Microsoft)</span>
+<span class="c1"># - Pylance</span>
+<span class="c1"># - Python Indent</span>
+<span class="c1"># - Streamlit</span>
+</code></pre>
+</div>
+
+<h5 id="editores-de-terminal"><strong>Editores de Terminal</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Nano (simples)</span>
+nano<span class="w"> </span>app/main.py
+
+<span class="c1"># Vim (avançado)</span>
+vim<span class="w"> </span>app/main.py
+
+<span class="c1"># Micro (moderno)</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>micro
+micro<span class="w"> </span>app/main.py
+</code></pre>
+</div>
+
+<h4 id="2-desenvolvimento-local-sincronizacao"><strong>2. Desenvolvimento Local + Sincronização</strong></h4>
+
+<h5 id="configuracao-de-ambiente-local"><strong>Configuração de Ambiente Local</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># No seu computador de casa</span>
+git<span class="w"> </span>clone<span class="w"> </span>ssh://seu_usuario@servidor.fiocruz.br/opt/imunopreviniveis
+<span class="nb">cd</span><span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Criar ambiente virtual local</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">  </span><span class="c1"># Linux/Mac</span>
+<span class="c1"># ou</span>
+.venv<span class="se">\S</span>cripts<span class="se">\A</span>ctivate.ps1<span class="w">  </span><span class="c1"># Windows</span>
+
+<span class="c1"># Instalar dependências</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre>
+</div>
+
+<h5 id="sincronizacao-automatica"><strong>Sincronização Automática</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Script para sincronizar automaticamente</span>
+<span class="c1"># sync_to_server.sh</span>
+<span class="c1">#!/bin/bash</span>
+rsync<span class="w"> </span>-avz<span class="w"> </span>--delete<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--exclude<span class="o">=</span><span class="s1">&#39;.venv&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--exclude<span class="o">=</span><span class="s1">&#39;__pycache__&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--exclude<span class="o">=</span><span class="s1">&#39;*.pyc&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>./<span class="w"> </span>seu_usuario@servidor.fiocruz.br:/opt/imunopreviniveis/
+
+<span class="c1"># Executar sempre que fizer alterações</span>
+./sync_to_server.sh
+</code></pre>
+</div>
+
+<h4 id="3-debug-e-testes-remotos"><strong>3. Debug e Testes Remotos</strong></h4>
+
+<h5 id="logs-em-tempo-real"><strong>Logs em Tempo Real</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Conectar ao servidor e monitorar logs</span>
+ssh<span class="w"> </span>seu_usuario@servidor.fiocruz.br
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+
+<span class="c1"># Ver logs da aplicação</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/imunopreviniveis/out.log
+
+<span class="c1"># Ver logs de erro</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/imunopreviniveis/err.log
+
+<span class="c1"># Ver logs do sistema</span>
+sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>supervisor<span class="w"> </span>-f
+</code></pre>
+</div>
+
+<h5 id="testes-rapidos"><strong>Testes Rápidos</strong></h5>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Testar alterações sem reiniciar tudo</span>
+<span class="nb">cd</span><span class="w"> </span>/opt/imunopreviniveis
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+
+<span class="c1"># Testar módulo específico</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from app_sections.nova_analise import show_nova_analise; print(&#39;OK&#39;)&quot;</span>
+
+<span class="c1"># Testar import principal</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from app.main import main; print(&#39;Main OK&#39;)&quot;</span>
+</code></pre>
+</div>
+
+<hr />
+
+<h2 id="diferencas-local-vs-producao">📊 Diferenças: Local vs. Produção</h2>
+
+<h3 id="comparacao-tecnica-detalhada"><strong>Comparação Técnica Detalhada</strong></h3>
+
+<table>
+<thead>
+<tr>
+  <th>Aspecto</th>
+  <th>Desenvolvimento Local</th>
+  <th>Servidor de Produção</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Acesso</strong></td>
+  <td>Apenas você (localhost)</td>
+  <td>Qualquer pessoa (internet)</td>
+</tr>
+<tr>
+  <td><strong>Disponibilidade</strong></td>
+  <td>Quando você executa</td>
+  <td>24/7</td>
+</tr>
+<tr>
+  <td><strong>Recursos</strong></td>
+  <td>Sua máquina</td>
+  <td>Servidor dedicado</td>
+</tr>
+<tr>
+  <td><strong>Segurança</strong></td>
+  <td>Básica</td>
+  <td>Firewall, SSL, usuários</td>
+</tr>
+<tr>
+  <td><strong>Backup</strong></td>
+  <td>Manual</td>
+  <td>Automatizado</td>
+</tr>
+<tr>
+  <td><strong>Monitoramento</strong></td>
+  <td>Console</td>
+  <td>Logs, métricas, alertas</td>
+</tr>
+<tr>
+  <td><strong>Atualizações</strong></td>
+  <td>Manual</td>
+  <td>Scripts automatizados</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="por-que-localhost-nao-funciona-na-internet"><strong>Por que Localhost Não Funciona na Internet?</strong></h3>
+
+<h4 id="1-enderecamento-de-rede"><strong>1. Endereçamento de Rede</strong></h4>
+
+<pre><code>Desenvolvimento Local:
+Sua Máquina: 127.0.0.1 (localhost) → Porta 8501
+    ❌ IP privado, não roteável
+    ❌ Apenas acessível localmente
+    ❌ Internet não sabe onde está
+
+Servidor de Produção:
+Internet → 200.150.100.50 (IP público) → Porta 80/443 → Porta 8501
+    ✅ IP público, roteável
+    ✅ Acessível globalmente
+    ✅ Internet sabe exatamente onde está
+</code></pre>
+
+<h4 id="2-roteamento-e-dns"><strong>2. Roteamento e DNS</strong></h4>
+
+<pre><code>Localhost:
+Internet → ❌ Não sabe onde está 127.0.0.1
+Roteador → ❌ Não encaminha para sua máquina
+Sua Máquina → ✅ Apenas você pode acessar
+
+Servidor:
+Internet → ✅ Sabe onde está o IP público
+Roteador → ✅ Encaminha para o servidor
+Servidor → ✅ Qualquer pessoa pode acessar
+</code></pre>
+
+<h4 id="3-configuracao-de-rede"><strong>3. Configuração de Rede</strong></h4>
+
+<pre><code>Localhost:
+- ❌ Sem configuração de firewall para conexões externas
+- ❌ Sem port forwarding
+- ❌ Sem proxy reverso
+- ❌ Sem configuração de rede pública
+
+Servidor:
+- ✅ Firewall configurado para permitir tráfego web
+- ✅ Port forwarding configurado
+- ✅ Nginx como proxy reverso
+- ✅ Configuração de rede pública
+</code></pre>
+
+<h4 id="4-seguranca-e-acesso"><strong>4. Segurança e Acesso</strong></h4>
+
+<pre><code>Localhost:
+- ❌ Sem controle de acesso
+- ❌ Sem autenticação
+- ❌ Sem logs de acesso
+- ❌ Sem proteção contra ataques
+
+Servidor:
+- ✅ Controle de acesso configurado
+- ✅ Autenticação se necessário
+- ✅ Logs detalhados de acesso
+- ✅ Firewall e proteções ativas
+</code></pre>
+
+<hr />
+
+<h2 id="troubleshooting-comum">🔍 Troubleshooting Comum</h2>
+
+<h3 id="problemas-frequentes">Problemas Frequentes</h3>
+
+<h4 id="1-aplicacao-nao-inicia"><strong>1. Aplicação não inicia</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Verificar logs</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>tail<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Verificar dependências</span>
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>streamlit
+</code></pre>
+</div>
+
+<h4 id="2-erro-502-bad-gateway"><strong>2. Erro 502 Bad Gateway</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Verificar se Streamlit está rodando</span>
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>imunopreviniveis
+
+<span class="c1"># Verificar porta</span>
+netstat<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8501</span>
+</code></pre>
+</div>
+
+<h4 id="3-problemas-de-performance"><strong>3. Problemas de Performance</strong></h4>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># Verificar uso de recursos</span>
+htop
+df<span class="w"> </span>-h
+free<span class="w"> </span>-h
+</code></pre>
+</div>
+
+<hr />
+
+<h2 id="recursos-adicionais">📚 Recursos Adicionais</h2>
+
+<h3 id="documentacao-oficial">Documentação Oficial</h3>
+
+<ul>
+<li><a href="https://docs.streamlit.io/streamlit-community-cloud/deploy-your-app">Streamlit Deployment</a></li>
+<li><a href="https://nginx.org/en/docs/">Nginx Configuration</a></li>
+<li><a href="http://supervisord.org/">Supervisor Documentation</a></li>
+</ul>
+
+<h3 id="ferramentas-uteis">Ferramentas Úteis</h3>
+
+<ul>
+<li><strong>Monitoramento</strong>: Prometheus + Grafana</li>
+<li><strong>Logs</strong>: ELK Stack (Elasticsearch, Logstash, Kibana)</li>
+<li><strong>CI/CD</strong>: GitHub Actions, GitLab CI</li>
+<li><strong>Containerização</strong>: Docker + Docker Compose</li>
+</ul>
+
+<hr />
+
+<h2 id="conclusao">✨ Conclusão</h2>
+
+<p>Este guia fornece uma visão completa de como:
+1. <strong>Desenvolver localmente</strong> com Streamlit
+2. <strong>Entender a arquitetura</strong> modular do projeto
+3. <strong>Configurar um servidor de produção</strong> institucional
+4. <strong>Manter e atualizar</strong> a aplicação de forma segura
+5. <strong>Acessar remotamente</strong> o servidor de casa
+6. <strong>Desenvolver e modificar</strong> o código remotamente</p>
+
+<p>A aplicação está estruturada de forma profissional e modular, facilitando tanto o desenvolvimento local quanto o deployment em produção. O Streamlit oferece uma experiência de desenvolvimento ágil, enquanto a arquitetura permite escalabilidade e manutenibilidade.</p>
+
+<p>Para a Fiocruz ou qualquer instituição de ensino, este projeto representa uma solução robusta para disponibilizar dados de meningite de forma acessível e interativa para pesquisadores, profissionais de saúde e o público em geral.</p>
+
+<hr />
+
+<h2 id="resumo-do-fluxo-de-trabalho-diario">🚀 <strong>Resumo do Fluxo de Trabalho Diário</strong></h2>
+
+<h3 id="de-casa-para-o-servidor"><strong>De Casa para o Servidor:</strong></h3>
+
+<ol>
+<li><strong>Conectar</strong>: <code>ssh seu_usuario@servidor.fiocruz.br</code></li>
+<li><strong>Navegar</strong>: <code>cd /opt/meningite</code></li>
+<li><strong>Editar</strong>: <code>code .</code> ou <code>nano app/main.py</code></li>
+<li><strong>Testar</strong>: <code>sudo supervisorctl restart meningite</code></li>
+<li><strong>Verificar</strong>: <code>sudo tail -f /var/log/meningite/out.log</code></li>
+</ol>
+
+<h3 id="sincronizacao-com-seu-computador"><strong>Sincronização com Seu Computador:</strong></h3>
+
+<ol>
+<li><strong>Desenvolver localmente</strong> com VS Code</li>
+<li><strong>Sincronizar para servidor</strong>: <code>./sync_to_server.sh</code></li>
+<li><strong>Testar no servidor</strong>: reiniciar aplicação</li>
+<li><strong>Ver resultado</strong>: acessar via navegador</li>
+</ol>
+
+<h3 id="adicionar-novas-funcionalidades"><strong>Adicionar Novas Funcionalidades:</strong></h3>
+
+<ol>
+<li><strong>Criar arquivo</strong>: <code>app_sections/nova_funcionalidade.py</code></li>
+<li><strong>Integrar menu</strong>: editar <code>app/main.py</code></li>
+<li><strong>Testar</strong>: reiniciar aplicação</li>
+<li><strong>Deploy</strong>: sincronizar com servidor</li>
+</ol>
+
+<h3 id="atualizar-dados"><strong>Atualizar Dados:</strong></h3>
+
+<ol>
+<li><strong>Copiar novos CSV</strong>: <code>scp dados.csv servidor:/opt/meningite/TABELAS/</code></li>
+<li><strong>Atualizar código</strong>: modificar <code>dashboard_completo_v2.py</code></li>
+<li><strong>Testar</strong>: reiniciar aplicação</li>
+<li><strong>Verificar</strong>: acessar dashboard</li>
+</ol>
+
+<p><strong>🎯 Resultado</strong>: Você pode trabalhar de casa como se estivesse no servidor, com acesso completo ao código, dados e aplicação em produção!</p>
+
+<hr />
+
+<h2 id="nota-sobre-o-nome-do-projeto">📝 <strong>Nota sobre o Nome do Projeto</strong></h2>
+
+<p>Este guia foi adaptado para o projeto <strong>IMUNOPREVINIVEIS</strong>, que é um dashboard abrangente para análise de dados de doenças imunopreveníveis no Brasil. O projeto inclui análises de:</p>
+
+<ul>
+<li><strong>Casos de doenças</strong> imunopreveníveis</li>
+<li><strong>Dados de imunização</strong> e cobertura vacinal</li>
+<li><strong>Análises epidemiológicas</strong> regionais</li>
+<li><strong>Modelagem matemática</strong> de surtos</li>
+<li><strong>Relatórios técnicos</strong> para profissionais de saúde</li>
+</ul>
+
+<p>O nome <strong>IMUNOPREVINIVEIS</strong> reflete o foco do projeto em doenças que podem ser prevenidas através de vacinação, incluindo mas não se limitando a meningite, sarampo, caxumba, rubéola, poliomielite e outras doenças imunopreveníveis importantes para a saúde pública brasileira.</p>
+
+    </body>
+    </html>
+    
