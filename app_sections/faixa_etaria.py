@@ -469,25 +469,25 @@ def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
         - **Base para políticas**: Dados para orientar estratégias de prevenção
         """)
     
-    # 5. CORRELAÇÃO ENTRE COBERTURA VACINAL E CASOS
-    st.subheader("🔗 **5. Correlação entre Cobertura Vacinal e Incidência de Casos**")
+    # 5. ANÁLISE DE EFETIVIDADE VACINAL
+    st.subheader("💉 **5. Análise de Efetividade Vacinal e Cobertura por Região**")
     
     st.markdown("""
-    ### 🔗 **Conceito de Correlação Epidemiológica**
+    ### 💉 **Conceito de Efetividade Vacinal**
     
-    A **análise de correlação** entre cobertura vacinal e incidência permite:
+    A **efetividade vacinal** é um indicador epidemiológico que mede:
     
-    - **Avaliar efetividade**: Impacto da vacinação na redução de casos
-    - **Identificar padrões**: Relação entre proteção e ocorrência da doença
-    - **Orientar políticas**: Evidências para estratégias de vacinação
-    - **Monitorar impacto**: Acompanhar resultados das campanhas
+    - **Impacto real**: Redução de casos atribuível à vacinação
+    - **Proteção populacional**: Nível de imunidade coletiva alcançado
+    - **Estratégias de prevenção**: Efetividade das campanhas implementadas
+    - **Monitoramento**: Acompanhamento do impacto das vacinas
     
     ### 📊 **Metodologia**
     
-    - **Eixo X**: Cobertura vacinal pediátrica (doses aplicadas)
-    - **Eixo Y**: Taxa de incidência (casos por 100.000 habitantes)
-    - **Dados**: População do IBGE 2024 para cálculos precisos
-    - **Interpretação**: Correlação negativa indica efetividade da vacinação
+    - **Cobertura percentual**: Doses aplicadas / População elegível × 100
+    - **Taxa de incidência**: Casos por 100.000 habitantes
+    - **Análise comparativa**: Entre regiões com diferentes níveis de cobertura
+    - **Indicadores de efetividade**: Redução de casos em regiões com maior cobertura
     """)
     
     # Calcular incidência por região usando população total
@@ -503,45 +503,147 @@ def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
     
     casos_com_pop['Incidencia_por_100k'] = (casos_com_pop['Total'] / casos_com_pop['2024']) * 100000
     
-    # Merge dados de cobertura com dados de incidência para correlação
-    dados_correlacao = cobertura_clean.merge(
-        casos_com_pop[['Regiao', 'Incidencia_por_100k']], 
-        on='Regiao', 
+    # Mapear nomes das regiões de cobertura para corresponder aos dados de casos
+    mapeamento_cobertura = {
+        '1_Regiao_Norte': 'Norte',
+        '2_Regiao_Nordeste': 'Nordeste', 
+        '3_Regiao_Sudeste': 'Sudeste',
+        '4_Regiao_Sul': 'Sul',
+        '5_Regiao_Centro_Oeste': 'Centro-Oeste'
+    }
+    
+    cobertura_clean['Regiao_Corrigida'] = cobertura_clean['Regiao'].map(mapeamento_cobertura)
+    
+    # Merge dados de cobertura com dados de incidência
+    dados_analise = cobertura_clean.merge(
+        casos_com_pop[['Regiao', 'Incidencia_por_100k', 'Total', '2024']], 
+        left_on='Regiao_Corrigida',
+        right_on='Regiao', 
         how='inner'
     )
     
-    # Gráfico de correlação
-    fig_correlacao = px.scatter(
-        dados_correlacao,
-        x='Total_Pediatrico',
+    # Calcular cobertura percentual (estimativa baseada em população pediátrica)
+    # Assumindo que 15% da população é pediátrica (0-9 anos)
+    dados_analise['Populacao_Pediatrica_Estimada'] = dados_analise['2024'] * 0.15
+    dados_analise['Cobertura_Percentual'] = (dados_analise['Total_Pediatrico'] / dados_analise['Populacao_Pediatrica_Estimada']) * 100
+    
+    # Análise 1: Gráfico de Cobertura vs Incidência
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Gráfico de cobertura percentual
+        fig_cobertura = px.bar(
+            dados_analise,
+            x='Regiao_Corrigida',
+            y='Cobertura_Percentual',
+            title="Cobertura Vacinal Percentual por Região",
+            color='Cobertura_Percentual',
+            color_continuous_scale='Greens',
+            text_auto='.1f'
+        )
+        fig_cobertura.update_traces(textposition='outside')
+        fig_cobertura.update_layout(yaxis_title="Cobertura (%)")
+        st.plotly_chart(fig_cobertura, use_container_width=True)
+    
+    with col2:
+        # Gráfico de incidência
+        fig_incidencia = px.bar(
+            dados_analise,
+            x='Regiao_Corrigida',
+            y='Incidencia_por_100k',
+            title="Taxa de Incidência por Região",
+            color='Incidencia_por_100k',
+            color_continuous_scale='Reds',
+            text_auto='.1f'
+        )
+        fig_incidencia.update_traces(textposition='outside')
+        fig_incidencia.update_layout(yaxis_title="Incidência (por 100.000 hab.)")
+        st.plotly_chart(fig_incidencia, use_container_width=True)
+    
+    # Análise 2: Tabela de Indicadores
+    st.subheader("📊 **Indicadores de Efetividade Vacinal por Região**")
+    
+    # Criar tabela de indicadores
+    # A coluna 'Total' foi renomeada para 'Total_y' devido ao conflito no merge
+    indicadores = dados_analise[['Regiao_Corrigida', 'Cobertura_Percentual', 'Incidencia_por_100k', 'Total_y']].copy()
+    indicadores.columns = ['Região', 'Cobertura (%)', 'Incidência (por 100k)', 'Total de Casos']
+    indicadores = indicadores.round(2)
+    
+    # Adicionar classificação de efetividade
+    indicadores['Classificação'] = indicadores.apply(lambda row: 
+        'Alta Cobertura' if row['Cobertura (%)'] > 80 else
+        'Média Cobertura' if row['Cobertura (%)'] > 60 else
+        'Baixa Cobertura', axis=1)
+    
+    indicadores['Risco'] = indicadores.apply(lambda row:
+        'Baixo Risco' if row['Incidência (por 100k)'] < 50 else
+        'Médio Risco' if row['Incidência (por 100k)'] < 80 else
+        'Alto Risco', axis=1)
+    
+    st.dataframe(indicadores, use_container_width=True)
+    
+    # Análise 3: Gráfico de Efetividade
+    st.subheader("📈 **Análise de Efetividade Vacinal**")
+    
+    # Calcular efetividade relativa (região com menor incidência como referência)
+    menor_incidencia = dados_analise['Incidencia_por_100k'].min()
+    dados_analise['Efetividade_Relativa'] = ((menor_incidencia - dados_analise['Incidencia_por_100k']) / menor_incidencia) * 100
+    
+    fig_efetividade = px.scatter(
+        dados_analise,
+        x='Cobertura_Percentual',
         y='Incidencia_por_100k',
-        text='Regiao',
-        title="Correlação: Cobertura Vacinal vs Incidência de Casos (2024)",
-        labels={'Total_Pediatrico': 'Cobertura Vacinal Pediátrica', 'Incidencia_por_100k': 'Incidência por 100.000 habitantes'}
+        size='Total_y',
+        color='Regiao_Corrigida',
+        title="Efetividade Vacinal: Cobertura vs Incidência",
+        labels={
+            'Cobertura_Percentual': 'Cobertura Vacinal (%)',
+            'Incidencia_por_100k': 'Incidência (por 100.000 hab.)',
+            'Total_y': 'Total de Casos'
+        },
+        hover_data=['Regiao_Corrigida', 'Cobertura_Percentual', 'Incidencia_por_100k', 'Total_y']
     )
     
-    fig_correlacao.update_traces(textposition="top center")
-    st.plotly_chart(fig_correlacao, use_container_width=True)
+    st.plotly_chart(fig_efetividade, use_container_width=True)
     
+    # Análise 4: Interpretação e Recomendações
     st.markdown("""
-    ### 🔍 **Interpretação da Correlação**
+    ### 🔍 **Interpretação da Efetividade Vacinal**
     
-    **O que o gráfico mostra:**
-    - **Relação** entre cobertura vacinal e incidência de casos
-    - **Posição de cada região** no contexto nacional
-    - **Padrões** de efetividade da vacinação
+    **Indicadores Analisados:**
+    - **Cobertura Percentual**: Proporção da população pediátrica vacinada
+    - **Taxa de Incidência**: Casos por 100.000 habitantes
+    - **Efetividade Relativa**: Comparação com a região de menor incidência
     
-    **Como interpretar:**
-    - **Correlação negativa**: Maior cobertura → Menor incidência (desejável)
-    - **Correlação positiva**: Maior cobertura → Maior incidência (requer investigação)
-    - **Sem correlação**: Cobertura não influencia incidência (possível problema de qualidade)
+    **Como Interpretar:**
+    - **Alta Cobertura + Baixa Incidência**: Efetividade vacinal adequada
+    - **Baixa Cobertura + Alta Incidência**: Necessidade de intensificar campanhas
+    - **Alta Cobertura + Alta Incidência**: Possível problema de efetividade ou fatores externos
+    - **Baixa Cobertura + Baixa Incidência**: Região com baixa transmissão natural
     
     ### 📈 **Principais Observações**
     
-    - **Efetividade da vacinação**: Evidências do impacto das campanhas
-    - **Variações regionais**: Diferentes níveis de efetividade por região
-    - **Necessidades específicas**: Regiões que precisam de estratégias diferenciadas
-    - **Monitoramento**: Base para acompanhar tendências futuras
+    - **Variações regionais**: Diferentes níveis de cobertura e incidência
+    - **Efetividade diferenciada**: Impacto variável da vacinação por região
+    - **Fatores influenciadores**: Condições socioeconômicas e de acesso à saúde
+    - **Necessidades específicas**: Estratégias diferenciadas por região
+    
+    ### 🎯 **Recomendações Estratégicas**
+    
+    **Para Regiões com Baixa Cobertura:**
+    - Intensificar campanhas de vacinação
+    - Melhorar acesso aos serviços de saúde
+    - Implementar estratégias de busca ativa
+    
+    **Para Regiões com Alta Incidência:**
+    - Investigar fatores de risco específicos
+    - Fortalecer vigilância epidemiológica
+    - Implementar medidas de controle complementares
+    
+    **Para Todas as Regiões:**
+    - Monitorar cobertura vacinal continuamente
+    - Acompanhar tendências de incidência
+    - Avaliar efetividade das estratégias implementadas
     """)
     
     # 6. ANÁLISE DE ETIOLOGIA POR REGIÃO
