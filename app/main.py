@@ -15,6 +15,7 @@ from app_sections.explore import show_free_exploration
 from app_sections.reports import show_reports
 from app_sections.technical import show_technical_exposition
 from app_sections.sir_modeling import show_sir_modeling
+from app_sections.faixa_etaria import show_faixa_etaria_analysis
 
 from dashboard_completo_v2 import load_all_data
 
@@ -34,6 +35,7 @@ def main() -> None:
             "🔬 Análise de Etiologia",
             "💉 Análise de Imunização",
             "🗺️ Análise Regional",
+            "👶 Faixa Etária",
             "🔬 Análises Avançadas",
             "🦠 Análise Epidemiológica",
             "⚡ Taxa de Ataque",
@@ -56,6 +58,8 @@ def main() -> None:
         show_imunizacao_analysis(dados)
     elif opcao == "🗺️ Análise Regional":
         show_regional_analysis(dados)
+    elif opcao == "👶 Faixa Etária":
+        show_faixa_etaria_analysis(dados)
     elif opcao == "🔬 Análises Avançadas":
         show_advanced_analysis(dados)
     elif opcao == "🦠 Análise Epidemiológica":
