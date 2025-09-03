@@ -681,6 +681,15 @@ def show_technical_exposition(dados):
     Este dashboard representa um sistema completo de análise epidemiológica de meningite no Brasil, 
     integrando coleta automatizada de dados, processamento estatístico avançado e visualização interativa.
     
+    ### 📅 **Período dos Dados Analisados**
+    
+    O sistema processa dados históricos e atuais com os seguintes períodos:
+    - **Casos de meningite**: 2017-2024 (8 anos de vigilância epidemiológica)
+    - **Sorogrupos**: 2007-2024 (17 anos de dados de sorotipagem)
+    - **Etiologias**: 2007-2024 (17 anos de dados etiológicos)
+    - **Cobertura vacinal**: 2007-2022 (15 anos de campanhas de vacinação)
+    - **Dados de população**: IBGE 2024 (projeções demográficas atualizadas)
+    
     ### 📅 **Atualização Semanal Automática**
     
     ⏰ **O sistema atualiza automaticamente todos os dados SEMANALMENTE (1x por semana):**

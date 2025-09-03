@@ -19,18 +19,25 @@ def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
     Esta seção apresenta uma **análise epidemiológica abrangente** da meningite no Brasil, 
     com foco na **distribuição por faixa etária** e **cobertura vacinal regional**. 
     
+    ### 📅 **Período Analisado:**
+    
+    - **Casos de meningite**: Dados consolidados de **2017-2024** (8 anos de vigilância)
+    - **Cobertura vacinal**: Dados de **2007-2022** (15 anos de campanhas)
+    - **População**: Dados oficiais do **IBGE 2024** (projeções atualizadas)
+    - **Análise temporal**: Tendências e padrões ao longo do período
+    
     ### 📊 **O que você encontrará aqui:**
     
-    - **Distribuição etária** dos casos de meningite
+    - **Distribuição etária** dos casos de meningite (2017-2024)
     - **Análise regional** com dados de todas as regiões brasileiras
     - **Taxas de incidência** calculadas com dados oficiais do IBGE 2024
-    - **Cobertura vacinal** e sua correlação com incidência
+    - **Cobertura vacinal** e sua correlação com incidência (2007-2022)
     - **Análise etiológica** e de sorogrupos por região
     - **Interpretações didáticas** de cada análise estatística
     
     ### 🔬 **Metodologia Científica:**
     
-    - **Dados oficiais**: IBGE 2024, sistemas de vigilância epidemiológica
+    - **Dados oficiais**: IBGE 2024, sistemas de vigilância epidemiológica (SINAN)
     - **Análises estatísticas**: Taxas de incidência, correlações, distribuições
     - **Interpretação epidemiológica**: Baseada em evidências científicas
     - **Comparação com literatura**: Validação de achados científicos
@@ -93,8 +100,11 @@ def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
     
     ### 🔍 **Metodologia**
     
-    Esta análise utiliza dados consolidados de casos confirmados de meningite, agrupados por faixas etárias padronizadas. 
-    Os dados são apresentados em números absolutos e percentuais para facilitar a interpretação.
+    Esta análise utiliza dados consolidados de casos confirmados de meningite do período **2017-2024**, 
+    agrupados por faixas etárias padronizadas. Os dados são apresentados em números absolutos e 
+    percentuais para facilitar a interpretação.
+    
+    **Período dos dados**: 8 anos de vigilância epidemiológica (2017-2024)
     """)
     
     # Preparar dados de faixa etária
@@ -296,10 +306,12 @@ def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
     ### 📊 **Metodologia**
     
     A análise considera:
-    - **Doses aplicadas** por faixa etária e região
+    - **Doses aplicadas** por faixa etária e região (período 2007-2022)
     - **População elegível** para vacinação
     - **Cobertura pediátrica** (grupo de maior risco)
     - **Comparação regional** das estratégias de vacinação
+    
+    **Período dos dados**: 15 anos de campanhas de vacinação (2007-2022)
     """)
     
     # Preparar dados de cobertura
@@ -491,13 +503,21 @@ def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
     
     casos_com_pop['Incidencia_por_100k'] = (casos_com_pop['Total'] / casos_com_pop['2024']) * 100000
     
+    # Merge dados de cobertura com dados de incidência para correlação
+    dados_correlacao = cobertura_clean.merge(
+        casos_com_pop[['Regiao', 'Incidencia_por_100k']], 
+        on='Regiao', 
+        how='inner'
+    )
+    
     # Gráfico de correlação
     fig_correlacao = px.scatter(
-        x=cobertura_clean['Total_Pediatrico'],
-        y=casos_com_pop['Incidencia_por_100k'],
-        text=cobertura_clean['Regiao'],
+        dados_correlacao,
+        x='Total_Pediatrico',
+        y='Incidencia_por_100k',
+        text='Regiao',
         title="Correlação: Cobertura Vacinal vs Incidência de Casos (2024)",
-        labels={'x': 'Cobertura Vacinal Pediátrica', 'y': 'Incidência por 100.000 habitantes'}
+        labels={'Total_Pediatrico': 'Cobertura Vacinal Pediátrica', 'Incidencia_por_100k': 'Incidência por 100.000 habitantes'}
     )
     
     fig_correlacao.update_traces(textposition="top center")
