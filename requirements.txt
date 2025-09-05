@@ -10,7 +10,7 @@ scipy>=1.11.0
 elasticsearch>=8.0.0
 kibana-api>=0.0.4
 # Bibliotecas para modelagem epidemiológica
-epimodels>=0.4.0
+epimodels>=0.5.3
 epydemiology>=0.1.30
 lmfit>=1.3.4
 pymc>=5.25.0
