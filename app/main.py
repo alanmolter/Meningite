@@ -1,5 +1,10 @@
 import streamlit as st
 from datetime import datetime
+import sys
+import os
+
+# Add parent directory to path to access app_sections
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Lazy import of heavy functions from the monolith to keep compatibility
 from app_sections.overview import show_overview_2024

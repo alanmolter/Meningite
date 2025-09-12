@@ -1,0 +1,273 @@
+RESUMO ESTRATÉGICO DAS ABAS PARA APRESENTAÇÃO DE 15 MINUTOS
+PROJETO IMUNOPREVINIVEIS - DASHBOARD DE VIGILÂNCIA EPIDEMIOLÓGICA
+
+================================================================================
+
+1. ABAS PRIORITÁRIAS PARA APRESENTAÇÃO (15 MINUTOS)
+
+Para uma apresentação eficaz de 15 minutos, recomendo focar nas seguintes abas 
+em ordem de prioridade:
+
+================================================================================
+
+🥇 **PRIORIDADE MÁXIMA (3-4 minutos cada)**
+
+1. **🏠 VISÃO GERAL 2024** - Abertura Impactante
+2. **👶 FAIXA ETÁRIA** - Dados Epidemiológicos Clave
+3. **🦠 ANÁLISE DE SOROGRUPOS** - Situação Atual Crítica
+4. **⚙️ EXPOSITIVO TÉCNICO** - Demonstração do Sistema
+
+================================================================================
+
+🥈 **PRIORIDADE ALTA (2-3 minutos cada)**
+
+5. **💉 ANÁLISE DE IMUNIZAÇÃO** - Efetividade das Vacinas
+6. **🗺️ ANÁLISE REGIONAL** - Variações Geográficas
+
+================================================================================
+
+🥉 **PRIORIDADE MÉDIA (1-2 minutos cada)**
+
+7. **📊 ANÁLISE DE CASOS** - Tendências Temporais
+8. **🔬 ANÁLISE DE ETIOLOGIA** - Tipos de Meningite
+
+================================================================================
+
+2. ESTRATÉGIA DE APRESENTAÇÃO RECOMENDADA
+
+================================================================================
+
+**MINUTOS 1-4: ABERTURA IMPACTANTE**
+🏠 **VISÃO GERAL 2024**
+- Dados consolidados de 2024 (7.706 casos confirmados)
+- Letalidade geral (12,6%)
+- Incidência (3,61 casos por 100.000 habitantes)
+- Impacto visual imediato
+- Contextualização da situação atual
+
+**MINUTOS 5-8: DADOS EPIDEMIOLÓGICOS CLAVE**
+👶 **FAIXA ETÁRIA**
+- Distribuição etária (58,8% dos casos em <10 anos)
+- Taxas de incidência por faixa etária
+- Análise de efetividade vacinal
+- Correlação cobertura vs incidência
+- Dados mais relevantes para políticas públicas
+
+**MINUTOS 9-12: SITUAÇÃO CRÍTICA ATUAL**
+🦠 **ANÁLISE DE SOROGRUPOS**
+- Sorogrupos W e X com letalidade excepcional (70-75%)
+- Sorogrupo C com 29,9% de letalidade
+- Distribuição atual por sorogrupo
+- Alertas epidemiológicos importantes
+- Necessidade de vigilância especial
+
+**MINUTOS 13-15: DEMONSTRAÇÃO TÉCNICA**
+⚙️ **EXPONENTIVO TÉCNICO**
+- Sistema de vigilância integrado
+- Atualização automática semanal
+- Fontes de dados (SINAN, SIPNI, SIH, DataSUS, IBGE)
+- Robustez do sistema
+- Impacto para vigilância epidemiológica
+
+================================================================================
+
+3. RESUMO DETALHADO DAS ABAS PRIORITÁRIAS
+
+================================================================================
+
+🏠 **VISÃO GERAL 2024** (3-4 minutos)
+=====================================
+
+**OBJETIVO:** Impacto visual imediato e contextualização
+
+**DADOS PRINCIPAIS:**
+- 14.352 casos suspeitos em 2024
+- 7.706 casos confirmados
+- 974 óbitos confirmados
+- Letalidade geral: 12,6%
+- Incidência: 3,61 casos por 100.000 habitantes
+
+**PONTOS FORTES:**
+- Dados consolidados e atualizados
+- Indicadores epidemiológicos claros
+- Impacto visual imediato
+- Contextualização da situação atual
+
+**MENSAGEM CHAVE:**
+"Sistema de vigilância robusto com dados atualizados de 2024, demonstrando 
+a importância do monitoramento contínuo da meningite no Brasil."
+
+================================================================================
+
+👶 **FAIXA ETÁRIA** (3-4 minutos)
+=================================
+
+**OBJETIVO:** Demonstrar padrões epidemiológicos e efetividade vacinal
+
+**DADOS PRINCIPAIS:**
+- 58,8% dos casos em crianças <10 anos
+- Taxas de incidência por faixa etária
+- Cobertura vacinal regional (2007-2022)
+- Análise de efetividade vacinal
+- Correlação positiva moderada (0,622) entre cobertura e incidência
+
+**PONTOS FORTES:**
+- Dados epidemiológicos robustos
+- Análise de efetividade vacinal
+- Integração com dados populacionais (IBGE 2024)
+- Interpretações didáticas
+- Base para políticas públicas
+
+**MENSAGEM CHAVE:**
+"Análise epidemiológica abrangente que identifica grupos de risco e 
+demonstra a importância da vacinação em faixas etárias específicas."
+
+================================================================================
+
+🦠 **ANÁLISE DE SOROGRUPOS** (3-4 minutos)
+==========================================
+
+**OBJETIVO:** Alertar sobre situação crítica atual
+
+**DADOS PRINCIPAIS:**
+- Sorogrupo W: 70,0% de letalidade (10 casos, 7 óbitos)
+- Sorogrupo X: 75,0% de letalidade (4 casos, 3 óbitos)
+- Sorogrupo C: 29,9% de letalidade (77 casos, 23 óbitos)
+- Sorogrupo B: 15,9% de letalidade (132 casos, 21 óbitos)
+- Sorogrupo Y: 30,8% de letalidade (13 casos, 4 óbitos)
+
+**PONTOS FORTES:**
+- Dados de letalidade por sorogrupo
+- Identificação de sorogrupos emergentes
+- Alertas epidemiológicos importantes
+- Necessidade de vigilância especial
+- Base para estratégias de vacinação
+
+**MENSAGEM CHAVE:**
+"Sorogrupos W e X apresentam letalidade excepcionalmente alta, 
+requerendo vigilância especial e estratégias de controle específicas."
+
+================================================================================
+
+⚙️ **EXPONENTIVO TÉCNICO** (3-4 minutos)
+========================================
+
+**OBJETIVO:** Demonstrar robustez e inovação do sistema
+
+**DADOS PRINCIPAIS:**
+- Sistema de vigilância integrado
+- Atualização automática semanal
+- Fontes de dados: SINAN, SIPNI, SIH, DataSUS, IBGE
+- Análises estatísticas robustas
+- Base para políticas públicas
+
+**PONTOS FORTES:**
+- Demonstração técnica do sistema
+- Integração de múltiplas fontes
+- Atualização automática
+- Robustez metodológica
+- Impacto para vigilância epidemiológica
+
+**MENSAGEM CHAVE:**
+"Sistema inovador de vigilância epidemiológica que integra múltiplas 
+fontes de dados e fornece análises atualizadas para orientar políticas públicas."
+
+================================================================================
+
+4. ABAS COMPLEMENTARES (SE HOUVER TEMPO)
+
+================================================================================
+
+💉 **ANÁLISE DE IMUNIZAÇÃO** (2-3 minutos)
+==========================================
+
+**OBJETIVO:** Demonstrar efetividade das vacinas
+
+**DADOS PRINCIPAIS:**
+- Cobertura vacinal por região
+- Efetividade das vacinas
+- Impacto da vacinação
+- Estratégias de imunização
+
+**MENSAGEM CHAVE:**
+"Análise de efetividade vacinal que demonstra o impacto positivo 
+das campanhas de vacinação na redução de casos."
+
+================================================================================
+
+🗺️ **ANÁLISE REGIONAL** (2-3 minutos)
+=====================================
+
+**OBJETIVO:** Mostrar variações geográficas
+
+**DADOS PRINCIPAIS:**
+- Variações regionais na incidência
+- Padrões epidemiológicos regionais
+- Taxas de incidência por região
+- Estratégias regionais específicas
+
+**MENSAGEM CHAVE:**
+"Variações regionais significativas que requerem estratégias 
+específicas para cada região do país."
+
+================================================================================
+
+5. DICAS PARA APRESENTAÇÃO EFICAZ
+
+================================================================================
+
+**PREPARAÇÃO:**
+- Teste todas as abas antes da apresentação
+- Tenha dados de backup (screenshots)
+- Prepare transições suaves entre abas
+- Cronometre cada seção
+
+**DURANTE A APRESENTAÇÃO:**
+- Comece com impacto visual (Visão Geral 2024)
+- Use dados específicos e atualizados
+- Explique a relevância de cada achado
+- Conecte os dados com políticas públicas
+- Termine com a demonstração técnica
+
+**MENSAGENS CHAVE:**
+1. "Sistema robusto de vigilância epidemiológica"
+2. "Dados atualizados e análises estatísticas validadas"
+3. "Base científica para políticas públicas"
+4. "Identificação de grupos de risco e sorogrupos emergentes"
+5. "Impacto positivo da vacinação na redução de casos"
+
+================================================================================
+
+6. CRONOGRAMA SUGERIDO (15 MINUTOS)
+
+================================================================================
+
+**MINUTOS 1-2:** Introdução e contexto
+**MINUTOS 3-6:** Visão Geral 2024 (dados consolidados)
+**MINUTOS 7-10:** Faixa Etária (padrões epidemiológicos)
+**MINUTOS 11-14:** Sorogrupos (situação crítica atual)
+**MINUTO 15:** Expositivo Técnico (robustez do sistema)
+
+================================================================================
+
+7. CONCLUSÃO
+
+================================================================================
+
+Para uma apresentação de 15 minutos, foque nas 4 abas prioritárias que 
+demonstram:
+
+1. **IMPACTO VISUAL** (Visão Geral 2024)
+2. **DADOS EPIDEMIOLÓGICOS** (Faixa Etária)
+3. **SITUAÇÃO CRÍTICA** (Sorogrupos)
+4. **ROBUSTEZ TÉCNICA** (Expositivo Técnico)
+
+Esta estratégia garante uma apresentação equilibrada que combina dados 
+impactantes, análises epidemiológicas robustas e demonstração técnica, 
+maximizando o impacto da apresentação em tempo limitado.
+
+================================================================================
+
+Data: Dezembro 2024
+Projeto: IMUNOPREVINIVEIS
+Objetivo: Apresentação de 15 minutos
