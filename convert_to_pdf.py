@@ -10,12 +10,21 @@ from pathlib import Path
 import sys
 
 def convert_md_to_pdf(md_file_path, output_pdf_path=None):
-    """
-    Converte arquivo Markdown para PDF
-    
+    """Converte um arquivo Markdown em um documento PDF estilizado.
+
+    Lê o conteúdo de um arquivo Markdown, converte-o para HTML, aplica um CSS
+    personalizado para formatação profissional e, em seguida, usa a biblioteca
+    WeasyPrint para renderizar o HTML como um arquivo PDF.
+
     Args:
-        md_file_path (str): Caminho para o arquivo .md
-        output_pdf_path (str): Caminho de saída do PDF (opcional)
+        md_file_path (str): O caminho para o arquivo Markdown de entrada.
+        output_pdf_path (str, optional): O caminho para o arquivo PDF de saída.
+                                         Se não for fornecido, o PDF será salvo no
+                                         mesmo diretório que o arquivo de entrada
+                                         com a extensão .pdf. Defaults to None.
+
+    Returns:
+        bool: True se a conversão for bem-sucedida, False caso contrário.
     """
     
     try:
@@ -208,7 +217,12 @@ def convert_md_to_pdf(md_file_path, output_pdf_path=None):
         return False
 
 def main():
-    """Função principal"""
+    """Ponto de entrada principal do script.
+
+    Verifica se o arquivo 'GUIA_DEPLOYMENT.md' existe no diretório atual
+    e chama a função `convert_md_to_pdf` para iniciar o processo de conversão.
+    Imprime mensagens de status para o usuário.
+    """
     md_file = "GUIA_DEPLOYMENT.md"
     
     # Verificar se o arquivo existe

@@ -38,7 +38,18 @@ st.set_page_config(
 )
 
 def load_all_data():
-    """Carrega todos os dados processados"""
+    """Carrega e pré-processa todos os conjuntos de dados necessários para o dashboard.
+
+    Esta função é responsável por ler os arquivos CSV da pasta 'TABELAS/' e 'data/processed/',
+    tratar exceções de arquivos ausentes e, em seguida, chamar funções auxiliares para
+    criar conjuntos de dados derivados, como dados regionais e temporais.
+
+    Returns:
+        dict: Um dicionário contendo todos os DataFrames carregados e processados,
+              prontos para serem utilizados pelas funções de visualização. As chaves
+              do dicionário são nomes descritivos dos conjuntos de dados.
+              Retorna None se ocorrer um erro crítico durante o carregamento.
+    """
     
     st.info("📊 Carregando todos os dados processados...")
     
@@ -112,7 +123,22 @@ def load_all_data():
         return None
 
 def create_regional_data(imunizacao_uf):
-    """Cria dados regionais a partir dos dados de UF"""
+    """Cria um DataFrame com dados regionais simulados a partir de dados por UF.
+
+    Esta função utiliza um mapeamento predefinido de Unidades Federativas (UFs) para
+    as cinco grandes regiões do Brasil. Ela então gera dados simulados (aleatórios)
+    para o total de doses e a cobertura média de cada região.
+
+    Args:
+        imunizacao_uf (pd.DataFrame): DataFrame contendo dados de imunização por UF.
+                                     Atualmente, é usado apenas para referência do
+                                     mapeamento, mas poderia ser usado para agregar
+                                     dados reais.
+
+    Returns:
+        pd.DataFrame: Um DataFrame com dados agregados por região, contendo as colunas
+                      'Regiao', 'Total_UFs', 'Total_Doses' e 'Cobertura_Media'.
+    """
     # Mapeamento de UFs para regiões
     mapeamento_regioes = {
         'Norte': ['11 Rondônia', '12 Acre', '13 Amazonas', '14 Roraima', '15 Pará', '16 Amapá', '17 Tocantins'],
@@ -139,7 +165,21 @@ def create_regional_data(imunizacao_uf):
     return pd.DataFrame(dados_regional)
 
 def create_temporal_regional_data(imunizacao_2023_2025):
-    """Cria dados temporais regionais"""
+    """Gera dados temporais regionais simulados para análise.
+
+    Esta função cria um DataFrame com dados simulados (aleatórios) de doses e cobertura
+    para cada região do Brasil, ao longo de um período de três anos (2023-2025).
+    É útil para visualizações de séries temporais quando dados reais não estão disponíveis.
+
+    Args:
+        imunizacao_2023_2025 (pd.DataFrame): DataFrame de referência. Atualmente não utilizado
+                                           diretamente para os cálculos, mas serve como
+                                           gatilho para a criação dos dados.
+
+    Returns:
+        pd.DataFrame: Um DataFrame com dados temporais simulados por região,
+                      contendo as colunas 'Regiao', 'Ano', 'Total_Doses' e 'Cobertura'.
+    """
     # Dados simulados para análise temporal regional
     regioes = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul']
     anos = [2023, 2024, 2025]
@@ -157,7 +197,20 @@ def create_temporal_regional_data(imunizacao_2023_2025):
     return pd.DataFrame(dados_temporais)
 
 def create_temporal_analysis(imunizacao_2023_2025):
-    """Cria dados para análise temporal"""
+    """Cria um DataFrame com dados simulados para análise temporal.
+
+    Gera um conjunto de dados simulados (aleatórios) de casos de meningite e cobertura
+    vacinal para um intervalo de anos (2020-2025). Serve como um substituto para
+    análises de tendência quando dados reais consolidados não estão disponíveis.
+
+    Args:
+        imunizacao_2023_2025 (pd.DataFrame): DataFrame de referência, não utilizado
+                                           diretamente nos cálculos.
+
+    Returns:
+        pd.DataFrame: Um DataFrame com dados temporais simulados, contendo as
+                      colunas 'Ano', 'Casos' e 'Cobertura'.
+    """
     # Dados simulados para análise temporal
     anos = list(range(2020, 2026))
     dados_temporais = []
@@ -172,7 +225,16 @@ def create_temporal_analysis(imunizacao_2023_2025):
     return pd.DataFrame(dados_temporais)
 
 def create_correlation_matrix():
-    """Cria matriz de correlação simulada"""
+    """Gera uma matriz de correlação simulada.
+
+    Cria uma matriz de correlação 5x5 com valores aleatórios para demonstrar
+    a funcionalidade de visualização de correlações (heatmap). As variáveis
+    são 'Casos', 'Letalidade', 'Cobertura', 'Populacao' e 'Temperatura'.
+    A matriz é simétrica e tem a diagonal principal preenchida com 1.0.
+
+    Returns:
+        pd.DataFrame: Uma matriz de correlação simulada como um DataFrame do Pandas.
+    """
     # Criar matriz de correlação simulada
     n_vars = 5
     corr_matrix = np.random.rand(n_vars, n_vars)
@@ -188,7 +250,18 @@ def create_correlation_matrix():
     )
 
 def show_overview_2024(dados):
-    """Mostra visão geral dos dados de 2024"""
+    """Exibe a seção "Visão Geral 2024" no dashboard.
+
+    Esta função renderiza uma visão geral dos dados de meningite para o ano de 2024.
+    Ela apresenta métricas chave, como total de casos suspeitos e óbitos, letalidade,
+    e gráficos de distribuição de casos por etiologia e sorogrupo. Também inclui
+    um resumo estatístico e informações gerais sobre a doença.
+
+    Args:
+        dados (dict): O dicionário global contendo todos os DataFrames da aplicação.
+                      As chaves 'dados_gerais_2024', 'bacterianas_2024', 'etiologia_2024',
+                      e 'sorogrupos_2024' são utilizadas.
+    """
     st.header("🏠 **Visão Geral 2024 - Meningite Brasil**")
     st.markdown("---")
     
@@ -323,7 +396,17 @@ def show_overview_2024(dados):
         st.warning("⚠️ Dados de 2024 não disponíveis")
 
 def show_cases_analysis(dados):
-    """Mostra análise dos casos notificados 2017-2024"""
+    """Exibe a seção "Análise dos Casos Notificados 2017-2024".
+
+    Renderiza uma análise detalhada da evolução temporal dos casos de meningite.
+    Apresenta métricas gerais, um gráfico de linha da evolução dos casos, análise
+    de sazonalidade (se disponível), e uma análise de tendência linear com
+    interpretações estatísticas detalhadas (coeficiente angular, R², p-valor).
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza as chaves 'casos_consolidados'
+                      e 'casos_2017_2022'.
+    """
     st.header("📈 **Análise dos Casos Notificados 2017-2024**")
     st.markdown("---")
     
@@ -570,7 +653,17 @@ def show_cases_analysis(dados):
         st.warning("⚠️ Dados de casos não disponíveis")
 
 def show_sorogrupos_analysis(dados):
-    """Mostra análise de sorogrupos com relações não lineares"""
+    """Exibe a seção "Análise de Sorogrupos e Relações Não Lineares".
+
+    Esta função realiza uma análise aprofundada dos sorogrupos de meningite.
+    Ela calcula e exibe a letalidade por sorogrupo, explora relações não lineares
+    entre casos e letalidade com regressão polinomial, realiza análises de
+    correlação de Pearson e Spearman, e oferece uma análise de clustering (K-Means)
+    para agrupar sorogrupos com perfis epidemiológicos semelhantes.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza a chave 'sorogrupos_consolidados'.
+    """
     st.header("🦠 **Análise de Sorogrupos e Relações Não Lineares**")
     st.markdown("---")
     
@@ -906,7 +999,18 @@ def show_sorogrupos_analysis(dados):
         st.error("❌ Dados de sorogrupos não disponíveis")
 
 def show_etiologia_analysis(dados):
-    """Mostra análise de etiologia com análise de componentes principais"""
+    """Exibe a seção "Análise por Etiologia e Análise de Componentes Principais".
+
+    Esta função consolida e analisa os dados de meningite por etiologia (agente causador).
+    Ela padroniza os nomes das etiologias, exibe a distribuição de casos e letalidade,
+    e realiza análises avançadas como Análise de Componentes Principais (PCA) para
+    redução de dimensionalidade, uma matriz de correlação para identificar padrões
+    temporais entre etiologias, e análise de sazonalidade.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza as chaves
+                      'etiologias_consolidadas', 'etiologia_2024', e 'sih_meningite'.
+    """
     st.header("🧬 **Análise por Etiologia e Análise de Componentes Principais**")
     st.markdown("---")
     
@@ -1459,7 +1563,19 @@ def show_etiologia_analysis(dados):
         st.error("❌ Dados de etiologia não disponíveis")
 
 def show_imunizacao_analysis(dados):
-    """Mostra análise de dados de imunização com análise de impacto"""
+    """Exibe a seção "Dados de Imunização e Análise de Impacto".
+
+    Renderiza uma análise completa sobre a vacinação contra meningite. A função
+    apresenta a evolução da cobertura vacinal, a correlação entre vacinação e
+    o número de casos, a distribuição regional da cobertura, e uma análise
+    preditiva usando o modelo ARIMA para prever tendências futuras de
+    doses aplicadas e casos.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza as chaves 'imunizacao_ano',
+                      'imunizacao_uf', 'imunizacao_2023_2025', 'imunizacao_processada',
+                      e 'casos_consolidados'.
+    """
     st.header("💉 **Dados de Imunização e Análise de Impacto**")
     st.markdown("---")
     
@@ -1863,7 +1979,19 @@ def show_imunizacao_analysis(dados):
         st.error("❌ Dados de imunização não disponíveis")
 
 def show_advanced_analysis(dados):
-    """Mostra análises avançadas com machine learning e estatísticas complexas"""
+    """Exibe a seção "Análises Avançadas e Machine Learning".
+
+    Esta função apresenta análises estatísticas e de machine learning mais complexas.
+    Inclui uma decomposição de série temporal avançada (STL), teste de estacionariedade (ADF),
+    análise de correlação cruzada entre sorogrupos, um modelo de regressão múltipla
+    para identificar fatores preditivos de casos, e clustering hierárquico para
+    agrupamento de sorogrupos.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza as chaves 'casos_consolidados',
+                      'sorogrupos_consolidados', 'etiologias_consolidadas', e
+                      'imunizacao_processada'.
+    """
     st.header("🔬 **Análises Avançadas e Machine Learning**")
     st.markdown("---")
     
@@ -2450,7 +2578,18 @@ def show_advanced_analysis(dados):
         st.error("❌ Dados não disponíveis para análise avançada")
 
 def show_regional_analysis(dados):
-    """Mostra análise regional detalhada"""
+    """Exibe a seção "Análise Regional - Distribuição Geográfica".
+
+    Renderiza uma análise focada nas cinco grandes regiões do Brasil. A função
+    mostra a evolução temporal da vacinação por região, compara o total de doses
+    e a cobertura média entre as regiões, e analisa a correlação entre o
+    número de doses aplicadas e os casos notificados em nível regional.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza as chaves 'analise_regional'
+                      e 'imunizacao_regional'. Também tenta carregar
+                      'data/processed/analise_regional.csv' para correlação.
+    """
     st.header("🗺️ **Análise Regional - Distribuição Geográfica**")
     st.markdown("---")
     
@@ -2776,7 +2915,18 @@ def show_regional_analysis(dados):
         st.error("❌ Dados regionais não disponíveis")
 
 def show_epidemiological_analysis(dados):
-    """Mostra análise epidemiológica detalhada"""
+    """Exibe a seção "Análise Epidemiológica - Indicadores de Saúde Pública".
+
+    Esta função foca em indicadores epidemiológicos chave, como a letalidade.
+    Ela mostra a evolução da taxa de letalidade por etiologia ao longo do tempo,
+    apresenta um heatmap para visualização intuitiva desses dados, e analisa
+    a evolução da letalidade média anual.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza as chaves 'letalidade_etiologia'
+                      e 'casos_2017_2022', além de outras tabelas de casos para
+                      cálculos de fallback.
+    """
     st.header("🦠 **Análise Epidemiológica - Indicadores de Saúde Pública**")
     st.markdown("---")
     
@@ -2912,7 +3062,17 @@ def show_epidemiological_analysis(dados):
         st.warning("⚠️ Dados epidemiológicos não disponíveis")
 
 def show_attack_rate_analysis(dados):
-    """Mostra análise de taxa de ataque e força de infecção"""
+    """Exibe a seção "Análise de Taxa de Ataque e Força de Infecção".
+
+    Calcula e exibe a taxa de ataque (casos por 100.000 habitantes) e a força de
+    infecção (taxa instantânea de aquisição da doença). A função mostra a evolução
+    anual dessas métricas, a sazonalidade baseada em dados de hospitalização (SIH),
+    e a correlação entre a taxa de ataque e a letalidade.
+
+    Args:
+        dados (dict): O dicionário global de dados. Utiliza 'casos_2017_2022',
+                      'casos_consolidados', e 'sih_meningite'.
+    """
     st.header("⚡ **Análise de Taxa de Ataque e Força de Infecção**")
     st.markdown("---")
     
@@ -3263,7 +3423,18 @@ def show_attack_rate_analysis(dados):
         st.warning("⚠️ Dados de casos não disponíveis")
 
 def show_free_exploration(dados):
-    """Interface para exploração livre dos dados"""
+    """Exibe a seção "Exploração Livre dos Dados".
+
+    Cria uma interface interativa que permite ao usuário selecionar qualquer um dos
+    datasets carregados, visualizar suas informações (linhas, colunas, tipos de dados,
+    valores nulos), analisar colunas individuais com histogramas e gráficos de barras,
+    e explorar correlações. Oferece também filtros personalizados e a opção de
+    fazer o download dos dados filtrados.
+
+    Args:
+        dados (dict): O dicionário global contendo todos os DataFrames disponíveis
+                      para exploração.
+    """
     st.header("🔍 **Exploração Livre dos Dados**")
     st.markdown("---")
     
@@ -3525,7 +3696,18 @@ def show_free_exploration(dados):
         st.error("❌ Nenhum dado disponível para exploração")
 
 def show_reports(dados):
-    """Gera relatórios e permite download dos dados"""
+    """Exibe a seção "Relatórios e Downloads".
+
+    Esta função oferece ferramentas para que o usuário possa gerar e baixar
+    informações consolidadas. Ela permite a criação de relatórios automáticos
+    (de casos, imunização, sorogrupos), o download dos principais datasets em
+    formato CSV, e a geração de relatórios personalizados com seleção de
+    datasets, período e tipo de relatório.
+
+    Args:
+        dados (dict): O dicionário global de dados, usado para gerar os relatórios
+                      e fornecer os arquivos para download.
+    """
     st.header("📋 **Relatórios e Downloads**")
     st.markdown("---")
     
@@ -3843,7 +4025,18 @@ def show_reports(dados):
         st.error("❌ Nenhum dado disponível para relatórios")
 
 def show_technical_exposition(dados):
-    """Mostra exposição técnica completa do sistema"""
+    """Exibe a seção "Expositivo Técnico - Arquitetura e Metodologia".
+
+    Esta função renderiza uma página detalhada que serve como documentação técnica
+    do sistema. Ela descreve a arquitetura de dados, o fluxo de automação, a
+    estrutura das tabelas, as metodologias estatísticas e de machine learning
+    implementadas, as tecnologias de visualização, e as estratégias de otimização.
+    Também apresenta estatísticas ao vivo sobre os dados carregados.
+
+    Args:
+        dados (dict): O dicionário global de dados, usado para exibir estatísticas
+                      em tempo real sobre os datasets carregados.
+    """
     st.header("⚙️ **Expositivo Técnico - Arquitetura e Metodologia**")
     st.markdown("---")
     
@@ -4433,7 +4626,13 @@ def show_technical_exposition(dados):
 
 
 def main():
-    """Função principal do dashboard"""
+    """Função principal que executa a aplicação Streamlit.
+
+    Esta função inicializa a página do dashboard, configura a barra lateral de navegação,
+    chama a função `load_all_data()` para carregar todos os dados, e gerencia a
+    exibição da seção selecionada pelo usuário. Se o carregamento de dados falhar,
+    exibe uma mensagem de erro com instruções.
+    """
     st.title("🦠 **Dashboard Completo de Meningite Brasil**")
     st.markdown("---")
     

@@ -23,17 +23,16 @@ except ImportError:
     EPIMODELS_AVAILABLE = False
 
 def sir_equations(y, t, beta, gamma):
-    """
-    Equações diferenciais do modelo SIR
-    
-    S' = -beta * S * I
-    I' = beta * S * I - gamma * I  
-    R' = gamma * I
-    
-    Parâmetros:
-    - beta: taxa de transmissão
-    - gamma: taxa de recuperação
-    - y: [S, I, R] no tempo t
+    """Define o sistema de equações diferenciais ordinárias (EDOs) para o modelo SIR.
+
+    Args:
+        y (list): Um vetor contendo as populações dos compartimentos [S, I, R] no tempo t.
+        t (float): O tempo atual da integração (não usado diretamente, mas requerido pelo solver).
+        beta (float): A taxa de transmissão da doença.
+        gamma (float): A taxa de recuperação da doença.
+
+    Returns:
+        list: Uma lista contendo as derivadas [dS/dt, dI/dt, dR/dt].
     """
     S, I, R = y
     N = S + I + R  # População total
@@ -45,18 +44,36 @@ def sir_equations(y, t, beta, gamma):
     return [dSdt, dIdt, dRdt]
 
 def calculate_r0(beta, gamma):
-    """Calcula o número básico de reprodução R₀"""
+    """Calcula o Número Básico de Reprodução (R₀) do modelo SIR.
+
+    O R₀ é uma métrica epidemiológica fundamental que representa o número médio
+    de novas infecções causadas por um único indivíduo infectado em uma
+    população totalmente suscetível.
+
+    Args:
+        beta (float): A taxa de transmissão do modelo.
+        gamma (float): A taxa de recuperação do modelo.
+
+    Returns:
+        float: O valor calculado de R₀.
+    """
     return beta / gamma
 
 def solve_sir_model(S0, I0, R0, beta, gamma, days):
-    """
-    Resolve o modelo SIR numericamente
-    
-    Parâmetros:
-    - S0, I0, R0: condições iniciais
-    - beta: taxa de transmissão
-    - gamma: taxa de recuperação  
-    - days: número de dias para simular
+    """Resolve o modelo SIR numericamente usando um solver de EDOs.
+
+    Args:
+        S0 (float): A população inicial de suscetíveis.
+        I0 (float): A população inicial de infectados.
+        R0 (float): A população inicial de recuperados.
+        beta (float): A taxa de transmissão da doença.
+        gamma (float): A taxa de recuperação da doença.
+        days (int): O número de dias para simular o modelo.
+
+    Returns:
+        tuple: Uma tupla contendo:
+            - t (np.ndarray): Um array de pontos no tempo.
+            - solution (np.ndarray): Um array com a solução [S, I, R] para cada ponto no tempo.
     """
     # Condições iniciais
     y0 = [S0, I0, R0]
@@ -70,12 +87,22 @@ def solve_sir_model(S0, I0, R0, beta, gamma, days):
     return t, solution
 
 def fit_sir_to_data(casos_data, population):
-    """
-    Ajusta modelo SIR aos dados reais de casos
-    
-    Parâmetros:
-    - casos_data: DataFrame com colunas 'data' e 'casos'
-    - population: população total
+    """Ajusta os parâmetros do modelo SIR (beta e gamma) a um conjunto de dados de casos reais.
+
+    Este processo, conhecido como calibração do modelo, utiliza um algoritmo de
+    otimização (Nelder-Mead) para encontrar os valores de `beta` e `gamma` que
+    minimizam o erro quadrático médio (MSE) entre a curva de casos acumulados
+    prevista pelo modelo e os dados observados.
+
+    Args:
+        casos_data (pd.DataFrame): Um DataFrame contendo os dados de casos,
+                                   que deve ter as colunas 'data' e 'casos'.
+        population (int): A população total da região em análise.
+
+    Returns:
+        dict: Um dicionário contendo os resultados do ajuste.
+              Em caso de sucesso, inclui 'beta', 'gamma', 'r0', 'mse', 'success' (True),
+              e as condições iniciais. Em caso de falha, retorna {'success': False}.
     """
     # Preparar dados
     casos_data = casos_data.copy()
@@ -153,7 +180,23 @@ def fit_sir_to_data(casos_data, population):
         return {'success': False, 'message': 'Otimização falhou'}
 
 def create_sir_visualization(fit_result, prediction_days=365):
-    """Cria visualizações do modelo SIR"""
+    """Cria e retorna uma figura do Plotly com as visualizações do modelo SIR.
+
+    A figura contém quatro subplots:
+    1. Comparação entre os dados reais de casos acumulados e a curva do modelo SIR ajustado.
+    2. A evolução das populações de Suscetíveis, Infectados e Recuperados (S-I-R) ao longo do tempo.
+    3. A taxa de novas infecções ao longo do tempo.
+    4. O retrato de fase do modelo (S vs. I).
+
+    Args:
+        fit_result (dict): O dicionário de resultados retornado pela função `fit_sir_to_data`.
+        prediction_days (int, optional): O número de dias para simular e prever o
+                                         comportamento do modelo. Defaults to 365.
+
+    Returns:
+        plotly.graph_objects.Figure | None: Um objeto de figura do Plotly contendo os gráficos,
+                                             ou None se o ajuste do modelo não foi bem-sucedido.
+    """
     
     if not fit_result['success']:
         st.error("Não foi possível ajustar o modelo SIR aos dados")
@@ -270,7 +313,20 @@ def create_sir_visualization(fit_result, prediction_days=365):
     return fig
 
 def analyze_sir_parameters(fit_result):
-    """Analisa e interpreta os parâmetros do modelo SIR"""
+    """Analisa e interpreta os parâmetros ajustados do modelo SIR.
+
+    Calcula métricas derivadas, como o período infeccioso médio, e chama
+    funções auxiliares para obter interpretações textuais sobre o R₀,
+    a taxa de transmissão e o período infeccioso, além de fornecer
+    recomendações de controle epidêmico.
+
+    Args:
+        fit_result (dict): O dicionário de resultados retornado pela função `fit_sir_to_data`.
+
+    Returns:
+        dict | None: Um dicionário contendo a análise completa dos parâmetros,
+                     ou None se o ajuste do modelo não foi bem-sucedido.
+    """
     
     if not fit_result['success']:
         return None
@@ -298,7 +354,18 @@ def analyze_sir_parameters(fit_result):
     return analysis
 
 def get_r0_interpretation(r0):
-    """Interpreta o valor de R₀"""
+    """Fornece uma interpretação textual e estilizada para um dado valor de R₀.
+
+    Classifica o estado da epidemia (em declínio, estável, crescimento lento, etc.)
+    com base em faixas predefinidas de R₀ e retorna um dicionário com o status,
+    uma cor para visualização e uma explicação detalhada.
+
+    Args:
+        r0 (float): O valor do Número Básico de Reprodução.
+
+    Returns:
+        dict: Um dicionário com 'status', 'color' e 'explanation'.
+    """
     if r0 < 1:
         return {
             'status': 'Epidemia em declínio',
@@ -331,7 +398,14 @@ def get_r0_interpretation(r0):
         }
 
 def get_infectious_period_interpretation(period):
-    """Interpreta o período infeccioso"""
+    """Fornece uma interpretação textual para a duração do período infeccioso.
+
+    Args:
+        period (float): O período infeccioso médio em dias.
+
+    Returns:
+        str: Uma string descritiva classificando o período como curto, moderado ou longo.
+    """
     if period < 7:
         return f"Período infeccioso curto ({period:.1f} dias) - típico de doenças agudas"
     elif period < 14:
@@ -340,7 +414,14 @@ def get_infectious_period_interpretation(period):
         return f"Período infeccioso longo ({period:.1f} dias) - pode indicar casos crônicos ou subnotificação"
 
 def get_transmission_interpretation(beta):
-    """Interpreta a taxa de transmissão"""
+    """Fornece uma interpretação textual para a taxa de transmissão (beta).
+
+    Args:
+        beta (float): A taxa de transmissão do modelo.
+
+    Returns:
+        str: Uma string descritiva classificando a taxa como baixa, moderada ou alta.
+    """
     if beta < 0.1:
         return "Taxa de transmissão baixa - doença pouco contagiosa"
     elif beta < 0.5:
@@ -349,7 +430,14 @@ def get_transmission_interpretation(beta):
         return "Taxa de transmissão alta - doença altamente contagiosa"
 
 def get_epidemic_control_advice(r0):
-    """Fornece conselhos para controle epidêmico"""
+    """Fornece uma lista de recomendações de controle epidêmico com base no valor de R₀.
+
+    Args:
+        r0 (float): O valor do Número Básico de Reprodução.
+
+    Returns:
+        list: Uma lista de strings contendo as recomendações.
+    """
     if r0 < 1:
         return [
             "✅ Manter vigilância epidemiológica",
@@ -376,7 +464,21 @@ def get_epidemic_control_advice(r0):
         ]
 
 def create_sir_sensitivity_analysis(fit_result):
-    """Análise de sensibilidade dos parâmetros"""
+    """Realiza e visualiza uma análise de sensibilidade para os parâmetros beta e gamma.
+
+    Cria um gráfico com dois subplots. Cada subplot mostra como a curva de infectados
+    muda quando um dos parâmetros (beta ou gamma) é variado em +/- 10%, 20% e 30%
+    em relação ao seu valor ajustado. Isso ajuda a entender a robustez do modelo
+    e o impacto de cada parâmetro na dinâmica da epidemia.
+
+    Args:
+        fit_result (dict): O dicionário de resultados retornado pela função `fit_sir_to_data`.
+
+    Returns:
+        plotly.graph_objects.Figure | None: Um objeto de figura do Plotly com os gráficos
+                                             de sensibilidade, ou None se o ajuste
+                                             inicial não foi bem-sucedido.
+    """
     
     if not fit_result['success']:
         return None
@@ -450,7 +552,15 @@ def create_sir_sensitivity_analysis(fit_result):
     return fig
 
 def debug_available_data(dados):
-    """Função auxiliar para debug dos dados disponíveis"""
+    """Exibe informações de debug sobre os datasets disponíveis.
+
+    Função auxiliar usada durante o desenvolvimento para inspecionar o conteúdo
+    do dicionário de dados, mostrando os nomes dos datasets, número de linhas,
+    colunas e um exemplo dos registros.
+
+    Args:
+        dados (dict): O dicionário global de dados da aplicação.
+    """
     st.subheader("🔍 **Debug: Dados Disponíveis**")
     
     for key, value in dados.items():
@@ -465,7 +575,22 @@ def debug_available_data(dados):
             st.write(f"**{key}**: None")
 
 def show_sir_modeling(dados):
-    """Função principal para mostrar a modelagem SIR"""
+    """Exibe a seção completa de Modelagem Epidemiológica SIR.
+
+    Esta é a função principal que orquestra toda a aba de modelagem. Ela faz o seguinte:
+    1. Exibe uma introdução teórica detalhada sobre o modelo SIR.
+    2. Seleciona o melhor conjunto de dados disponível para a modelagem.
+    3. Apresenta uma interface para o usuário configurar os parâmetros da simulação (região, período, população).
+    4. Chama `fit_sir_to_data` para calibrar o modelo.
+    5. Chama `analyze_sir_parameters` para interpretar os resultados.
+    6. Chama `create_sir_visualization` e `create_sir_sensitivity_analysis` para gerar os gráficos.
+    7. Renderiza todos os resultados, métricas, interpretações e gráficos no Streamlit.
+
+    Args:
+        dados (dict): O dicionário global de dados. A função tentará usar vários
+                      datasets de casos (`casos_consolidados`, `casos_2017_2022`, `sih_meningite`, etc.)
+                      para encontrar a melhor série temporal para a modelagem.
+    """
     
     st.header("🧬 **Modelagem Epidemiológica SIR**")
     st.markdown("---")

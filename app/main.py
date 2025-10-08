@@ -26,6 +26,17 @@ from dashboard_completo_v2 import load_all_data
 
 
 def main() -> None:
+    """Função principal para executar a versão modularizada do dashboard.
+
+    Esta função inicializa a aplicação Streamlit, define a configuração da página,
+    carrega os dados necessários através da função `load_all_data` e constrói a
+    interface do usuário, incluindo a barra de navegação lateral. Com base na
+    seleção do usuário, ela chama a função de visualização correspondente da
+    seção apropriada.
+
+    Returns:
+        None
+    """
     st.set_page_config(page_title="Dashboard Meningite Brasil", page_icon="🦠", layout="wide")
 
     dados = load_all_data()

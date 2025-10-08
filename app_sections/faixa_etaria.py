@@ -8,7 +8,26 @@ from typing import Dict, Any
 
 
 def show_faixa_etaria_analysis(dados: Dict[str, Any]) -> None:
-    """Mostra análise detalhada de faixa etária e cobertura vacinal por região"""
+    """Exibe a seção de Análise por Faixa Etária e Cobertura Vacinal.
+
+    Esta função renderiza uma análise detalhada da distribuição de casos de
+    meningite, focando na estratificação por faixa etária e região. Ela carrega
+    seus próprios conjuntos de dados da pasta 'TABELAS/', incluindo casos,
+    cobertura vacinal e dados populacionais do IBGE.
+
+    As análises apresentadas incluem:
+    - Distribuição nacional de casos por faixa etária.
+    - Comparativo regional da distribuição de casos.
+    - Taxas de incidência por 100.000 habitantes, ajustadas pela população.
+    - Análise da efetividade vacinal, comparando cobertura e incidência.
+    - Distribuição de casos por etiologia e sorogrupo em nível regional.
+
+    Args:
+        dados (Dict[str, Any]): O dicionário global de dados da aplicação.
+                                 Este argumento é mantido por consistência com a
+                                 arquitetura do dashboard, embora a função carregue
+                                 os dados específicos que utiliza diretamente.
+    """
     
     st.header("👶 **Análise de Faixa Etária e Cobertura Vacinal por Região**")
     st.markdown("---")

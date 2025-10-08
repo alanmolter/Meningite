@@ -13,7 +13,17 @@ except ImportError:
 
 
 def create_advanced_flow_diagram():
-    """Cria diagrama de fluxo avançado e complexo usando Plotly"""
+    """Cria um diagrama de fluxo de dados avançado e interativo usando Plotly.
+
+    Este diagrama visualiza as 8 camadas do sistema epidemiológico, desde as
+    fontes de dados até o dashboard final. Ele usa nós, ícones e conexões
+    estilizadas para representar o fluxo de trabalho de forma clara e visualmente
+    atraente. O diagrama gerado é salvo como um arquivo PNG na raiz do projeto.
+
+    Returns:
+        plotly.graph_objects.Figure: Um objeto de figura do Plotly contendo o
+                                     diagrama de fluxo de dados.
+    """
     
     # Definir estrutura hierárquica complexa
     layers = {
@@ -278,7 +288,17 @@ def create_advanced_flow_diagram():
 
 
 def create_graphviz_flow_diagram():
-    """Cria diagrama usando Graphviz nativo para máxima complexidade"""
+    """Cria um diagrama de fluxo de dados detalhado usando a biblioteca Graphviz.
+
+    Esta função gera um diagrama de alta qualidade e complexidade, representando
+    as camadas e conexões do sistema epidemiológico. É uma alternativa ao diagrama
+    Plotly, oferecendo um estilo mais profissional e técnico. O diagrama é salvo
+    como um arquivo PNG na raiz do projeto.
+
+    Returns:
+        graphviz.Digraph | None: Um objeto Digraph do Graphviz contendo o diagrama,
+                                  ou None se a biblioteca Graphviz não estiver instalada.
+    """
     
     if not GRAPHVIZ_AVAILABLE:
         return None
@@ -518,7 +538,16 @@ def create_graphviz_flow_diagram():
 
 
 def create_data_architecture_diagram():
-    """Cria diagrama da arquitetura de dados usando Plotly"""
+    """Cria um diagrama visual da arquitetura de dados usando Plotly.
+
+    Este diagrama organiza as tabelas de dados em categorias lógicas (por exemplo,
+    Epidemiológicos, Sorogrupos, Imunização) e as exibe como nós interconectados,
+    convergindo para um nó central que representa o dashboard.
+
+    Returns:
+        plotly.graph_objects.Figure: Um objeto de figura do Plotly contendo o
+                                     diagrama da arquitetura de dados.
+    """
     
     # Definir categorias e suas tabelas
     categories = {
@@ -616,7 +645,20 @@ def create_data_architecture_diagram():
 
 
 def create_data_statistics_charts(dados):
-    """Cria gráficos de estatísticas dos dados carregados"""
+    """Cria gráficos de resumo sobre as estatísticas dos datasets carregados.
+
+    Gera dois gráficos Plotly:
+    1. Um gráfico de barras mostrando o número de registros (linhas) em cada dataset.
+    2. Um gráfico de pizza mostrando a distribuição do uso de memória (em MB) entre os datasets.
+
+    Args:
+        dados (dict): O dicionário global de dados da aplicação.
+
+    Returns:
+        tuple[plotly.graph_objects.Figure | None, plotly.graph_objects.Figure | None]:
+            Uma tupla contendo os dois objetos de figura do Plotly (gráfico de barras
+            e gráfico de pizza), ou (None, None) se não houver dados.
+    """
     
     if not dados:
         return None, None
@@ -670,7 +712,18 @@ def create_data_statistics_charts(dados):
 
 
 def show_technical_exposition(dados):
-    """Mostra exposição técnica completa do sistema"""
+    """Exibe a seção "Expositivo Técnico - Arquitetura e Metodologia".
+
+    Esta função renderiza uma página detalhada que serve como documentação técnica
+    do sistema. Ela descreve a arquitetura de dados, o fluxo de automação, a
+    estrutura das tabelas, as metodologias estatísticas e de machine learning
+    implementadas, as tecnologias de visualização, e as estratégias de otimização.
+    Apresenta também estatísticas e diagramas ao vivo sobre os dados carregados.
+
+    Args:
+        dados (dict): O dicionário global de dados, usado para exibir estatísticas
+                      em tempo real sobre os datasets carregados.
+    """
     st.header("⚙️ **Expositivo Técnico - Arquitetura e Metodologia**")
     st.markdown("---")
     

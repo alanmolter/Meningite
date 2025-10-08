@@ -11,7 +11,14 @@ import sys
 import os
 
 def convert_md_to_html(md_file_path):
-    """Converte Markdown para HTML"""
+    """Converte o conteúdo de um arquivo Markdown para uma string HTML.
+
+    Args:
+        md_file_path (str): O caminho para o arquivo Markdown de entrada.
+
+    Returns:
+        str | None: A string contendo o HTML convertido, ou None se ocorrer um erro.
+    """
     try:
         with open(md_file_path, 'r', encoding='utf-8') as f:
             md_content = f.read()
@@ -29,7 +36,15 @@ def convert_md_to_html(md_file_path):
         return None
 
 def create_html_file(html_content, output_html_path):
-    """Cria arquivo HTML completo"""
+    """Cria um arquivo HTML completo a partir de um conteúdo HTML e um template.
+
+    Args:
+        html_content (str): A string de conteúdo HTML (gerada a partir do Markdown).
+        output_html_path (str): O caminho onde o arquivo HTML final será salvo.
+
+    Returns:
+        bool: True se a criação do arquivo for bem-sucedida, False caso contrário.
+    """
     full_html = f"""
     <!DOCTYPE html>
     <html lang="pt-BR">
@@ -217,7 +232,19 @@ def create_html_file(html_content, output_html_path):
         return False
 
 def try_wkhtmltopdf(html_file_path, output_pdf_path):
-    """Tenta usar wkhtmltopdf se disponível"""
+    """Tenta converter um arquivo HTML para PDF usando o utilitário de linha de comando wkhtmltopdf.
+
+    Verifica se o `wkhtmltopdf` está instalado e disponível no PATH do sistema.
+    Se estiver, executa o comando para converter o arquivo HTML fornecido em PDF
+    com configurações de página específicas.
+
+    Args:
+        html_file_path (str): O caminho para o arquivo HTML de entrada.
+        output_pdf_path (str): O caminho para o arquivo PDF de saída.
+
+    Returns:
+        bool: True se a conversão com wkhtmltopdf for bem-sucedida, False caso contrário.
+    """
     try:
         # Verificar se wkhtmltopdf está instalado
         result = subprocess.run(['wkhtmltopdf', '--version'], 
@@ -255,7 +282,14 @@ def try_wkhtmltopdf(html_file_path, output_pdf_path):
         return False
 
 def main():
-    """Função principal"""
+    """Ponto de entrada principal para o script de conversão alternativo.
+
+    Este script orquestra a conversão do arquivo 'GUIA_DEPLOYMENT.md'.
+    Primeiro, ele converte o Markdown para HTML. Em seguida, tenta usar
+    o `wkhtmltopdf` para criar um PDF. Se `wkhtmltopdf` não estiver disponível
+    ou falhar, ele informa ao usuário como converter manualmente o arquivo HTML
+    gerado para PDF.
+    """
     md_file = "GUIA_DEPLOYMENT.md"
     
     # Verificar se o arquivo existe
